@@ -10,6 +10,7 @@ Even if you have it, this worked to update to recent version:
 ### set up node (nvm)
 If nvm already installed:
 `nvm install stable`
+currently using node v9.11.0 (npm v5.6.0)
 
 ### set up angular CLI
 `npm install -g @angular/cli`
@@ -20,3 +21,5 @@ Sarah Maas
 Carrie Edwards
 Colin Powell
 
+## C9 NOTES
+To serve Angular app on C9 `ng serve --open --host $IP --port $PORT --disable-host-check`
