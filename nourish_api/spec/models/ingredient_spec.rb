@@ -6,8 +6,6 @@ RSpec.describe Ingredient, type: :model do
   it { should validate_presence_of(:name) }
 
   # must belong to one category
- # it { should belong_to(:ingredient_category) }
-
-  #  pending "add some examples to (or delete) #{__FILE__}"
+  it { should belong_to(:ingredient_category) }
 
 end
