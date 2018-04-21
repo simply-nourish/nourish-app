@@ -10,22 +10,23 @@ RSpec.describe 'IngredientCategory API', type: :request do
 
     # spec for GET/ingredient_categories
     describe 'GET /ingredient_categories' do
+
         before { get '/ingredient_categories' }
 
         it 'returns ingredient_categories' do
-
             expect(json).not_to be_empty
             expect(json.size).to eq 10
-
         end
 
         it 'returns status 200' do  
             expect(response).to have_http_status 200
         end
+ 
     end 
 
     # spec for GET /ingredient_categories/:id
     describe 'GET /ingredient_categories/:id' do
+ 
         before { get "/ingredient_categories/#{ingredient_category_id}" }
 
         # expect a request for category id of :ingredient_category_id
@@ -51,10 +52,12 @@ RSpec.describe 'IngredientCategory API', type: :request do
                 expect(response.body).to match /Couldn't find IngredientCategory/
             end
         end    
+ 
     end
 
     # spec for POST /ingredient_category
     describe 'POST /ingredient_categories' do
+  
         let(:valid_attributes) { {name: 'Dairy'} }
 
         context 'when request is valid' do
@@ -80,11 +83,13 @@ RSpec.describe 'IngredientCategory API', type: :request do
                 expect(response.body).to match /Validation failed: Name can't be blank/
             end
         end
+ 
     end
 
 
     # spec for PUT /ingredient_category/:id
     describe 'PUT /ingredient_categories/:id' do
+
         let(:valid_attributes) { {name: 'Dairy'} } 
 
         context 'when record exists' do
@@ -98,6 +103,7 @@ RSpec.describe 'IngredientCategory API', type: :request do
                 expect(response).to have_http_status 204
             end
         end
+
     end
 
     # spec for DELETE /ingredient_category/:id
@@ -108,6 +114,8 @@ RSpec.describe 'IngredientCategory API', type: :request do
         it 'returns status code 204' do
             expect(response).to have_http_status 204 
         end
+  
     end
+
 end
     

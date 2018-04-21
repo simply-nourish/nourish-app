@@ -12,11 +12,10 @@ RSpec.describe 'Ingredient API', type: :request do
 
     # spec for GET /ingredient_categories/:id/ingredients
     describe 'GET /ingredient_categories/:ingredient_category_id/ingredients' do
- 
+  
         before { get "/ingredient_categories/#{ingredient_category_id}/ingredients" }
 
-        context 'when category exists' do
-            
+        context 'when category exists' do          
             it 'returns status code 200' do
                 expect(response).to have_http_status 200 
             end
@@ -24,7 +23,6 @@ RSpec.describe 'Ingredient API', type: :request do
             it 'returns all ingredients in that category' do
                 expect(json.size).to eq 10
             end
-
         end
 
         context 'when category does not exist' do
@@ -38,7 +36,7 @@ RSpec.describe 'Ingredient API', type: :request do
                 expect(response.body).to match /Couldn't find IngredientCategory/
             end
         end
- 
+   
     end
 
     # spec for GET /ingredient_categories/:ingredient_category_id/ingredients/:id
@@ -81,7 +79,6 @@ RSpec.describe 'Ingredient API', type: :request do
             it 'returns status code 201' do
                 expect(response).to have_http_status 201
             end
-
         end
 
         context 'when request attributes are invalid' do
@@ -99,13 +96,12 @@ RSpec.describe 'Ingredient API', type: :request do
     end
 
     # spec for PUT /ingredient_categories/:ingredient_category_id/ingredients/:id
-    describe 'PUT /ingredients/:id' do
-        
+    describe 'PUT /ingredients/:id' do      
+
         let(:valid_attrs) { {name: 'Fishsticks'} }
         before { put "/ingredients/#{id}", params: valid_attrs }
 
         context 'when ingredient exists' do
-
             it 'returns status code 204' do
                 expect(response).to have_http_status 204
             end
@@ -114,12 +110,10 @@ RSpec.describe 'Ingredient API', type: :request do
                updated_ingredient = Ingredient.find(id)
                expect(updated_ingredient.name).to match /Fishsticks/ 
             end
-
         end
 
         context 'when ingredient does not exist' do
             let(:id) { 0 }
-
             it 'returns status code 404' do
                 expect(response).to have_http_status 404
             end
@@ -127,13 +121,13 @@ RSpec.describe 'Ingredient API', type: :request do
             it 'returns a not found message' do
                 expect(response.body).to match /Couldn't find Ingredient/
             end
-
         end
 
     end
 
     # spec for DELETE /ingredient_categories/:ingredient_category_id/ingredients/:id
     describe 'DELETE /ingredients/:id' do
+
         before { delete "/ingredients/#{id}"}
 
         it 'returns status code 204' do

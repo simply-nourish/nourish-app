@@ -34,7 +34,6 @@ class IngredientCategoriesController < ApplicationController
         head :no_content
     end 
     
-
     private
     
         # set @ingredientcategory for GET, UPDATE, DEPETE
