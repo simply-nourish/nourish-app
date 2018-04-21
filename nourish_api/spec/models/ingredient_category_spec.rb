@@ -1,3 +1,6 @@
+# IngredientCategory model spec
+# /spec/models/ingredient_category_spec.rb
+
 require 'rails_helper'
 
 RSpec.describe IngredientCategory, type: :model do
