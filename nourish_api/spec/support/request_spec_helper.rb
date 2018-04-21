@@ -4,9 +4,9 @@
 
 module RequestSpecHelper
 
-    # create json method to shorten JSON.parse syntax
-    def json
-        JSON.parse(response.body)
-    end
+  # create json method to shorten JSON.parse syntax
+  def json
+    JSON.parse(response.body)
+  end
 
 end
