@@ -39,7 +39,7 @@ RSpec.describe 'Ingredient API', type: :request do
    
   end
 
-  # spec for GET /ingredient_categories/:ingredient_category_id/ingredients/:id
+  # spec for GET /ingredients/:id
   describe 'GET /ingredients/:id' do
  
     before { get "/ingredients/#{id}" }
@@ -95,7 +95,7 @@ RSpec.describe 'Ingredient API', type: :request do
    
   end
 
-  # spec for PUT /ingredient_categories/:ingredient_category_id/ingredients/:id
+  # spec for PUT /ingredients/:id
   describe 'PUT /ingredients/:id' do      
 
     let(:valid_attrs) { {name: 'Fishsticks'} }
@@ -125,7 +125,7 @@ RSpec.describe 'Ingredient API', type: :request do
 
   end
 
-  # spec for DELETE /ingredient_categories/:ingredient_category_id/ingredients/:id
+  # spec for DELETE /ingredients/:id
   describe 'DELETE /ingredients/:id' do
 
     before { delete "/ingredients/#{id}"}

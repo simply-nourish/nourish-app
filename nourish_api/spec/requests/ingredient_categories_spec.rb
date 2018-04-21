@@ -55,7 +55,7 @@ RSpec.describe 'IngredientCategory API', type: :request do
  
   end
 
-  # spec for POST /ingredient_category
+  # spec for POST /ingredient_categories
   describe 'POST /ingredient_categories' do
   
     let(:valid_attributes) { {name: 'Dairy'} }
@@ -87,7 +87,7 @@ RSpec.describe 'IngredientCategory API', type: :request do
   end
 
 
-  # spec for PUT /ingredient_category/:id
+  # spec for PUT /ingredient_categories/:id
   describe 'PUT /ingredient_categories/:id' do
 
     let(:valid_attributes) { {name: 'Dairy'} } 
@@ -106,7 +106,7 @@ RSpec.describe 'IngredientCategory API', type: :request do
 
   end
 
-  # spec for DELETE /ingredient_category/:id
+  # spec for DELETE /ingredient_categories/:id
   describe 'DELETE /ingredient_categories/:id' do
 
     before { delete "/ingredient_categories/#{ingredient_category_id}" }
