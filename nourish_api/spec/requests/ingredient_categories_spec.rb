@@ -104,6 +104,19 @@ RSpec.describe 'IngredientCategory API', type: :request do
       end
     end
 
+    context 'when record does not exist' do
+      let(:ingredient_category_id) { 0 }
+      before { put "/ingredient_categories/#{ingredient_category_id}", params: valid_attributes}
+      
+      it 'returns status code 404' do
+        expect(response).to have_http_status 404
+      end
+
+      it 'returns a not found message' do
+        expect(response.body).to match /Couldn't find IngredientCategory/
+      end
+    end
+
   end
 
   # spec for DELETE /ingredient_categories/:id
