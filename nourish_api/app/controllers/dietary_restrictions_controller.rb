@@ -36,7 +36,7 @@ class DietaryRestrictionsController < ApplicationController
     
     private
     
-      # set @dietary_restriction for GET, UPDATE, DEPETE
+      # set @dietary_restriction for GET, UPDATE, DELETE
       def set_dietary_restriction
         @dietary_restriction = DietaryRestriction.find(params[:id])
       end
