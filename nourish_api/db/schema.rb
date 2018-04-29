@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180429160245) do
+ActiveRecord::Schema.define(version: 20180429163109) do
 
   create_table "dietary_restrictions", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
     t.string "name"
@@ -32,17 +32,6 @@ ActiveRecord::Schema.define(version: 20180429160245) do
     t.index ["ingredient_category_id"], name: "index_ingredients_on_ingredient_category_id"
   end
 
-<<<<<<< HEAD
-  create_table "recipes", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
-    t.string "title"
-    t.bigint "user_id"
-    t.string "source"
-    t.integer "servings"
-    t.text "description"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["user_id"], name: "index_recipes_on_user_id"
-=======
   create_table "meal_plans", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
     t.bigint "user_id"
     t.string "name"
@@ -57,31 +46,46 @@ ActiveRecord::Schema.define(version: 20180429160245) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "recipes", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
+    t.string "title"
+    t.bigint "user_id"
+    t.string "source"
+    t.integer "servings"
+    t.text "description"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_recipes_on_user_id"
+  end
+
   create_table "shopping_lists", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
     t.string "name"
     t.bigint "user_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["user_id"], name: "index_shopping_lists_on_user_id"
->>>>>>> f818c8601f5b3ee407b90202194417729d3650e1
   end
 
   create_table "users", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
+    t.string "email", default: "", null: false
+    t.string "encrypted_password", default: "", null: false
+    t.string "reset_password_token"
+    t.datetime "reset_password_sent_at"
+    t.datetime "remember_created_at"
+    t.integer "sign_in_count", default: 0, null: false
+    t.datetime "current_sign_in_at"
+    t.datetime "last_sign_in_at"
+    t.string "current_sign_in_ip"
+    t.string "last_sign_in_ip"
     t.string "first_name"
     t.string "last_name"
-    t.string "email"
-    t.string "password_digest"
     t.integer "default_servings"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["email"], name: "index_users_on_email", unique: true
+    t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
   add_foreign_key "ingredients", "ingredient_categories"
-<<<<<<< HEAD
-  add_foreign_key "recipes", "users"
-=======
   add_foreign_key "meal_plans", "users"
   add_foreign_key "shopping_lists", "users"
->>>>>>> f818c8601f5b3ee407b90202194417729d3650e1
 end
