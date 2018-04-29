@@ -1,5 +1,5 @@
 # measure factory
-# /spec/factories/measure.rb
+# /spec/factories/measures.rb
 
 FactoryBot.define do
   factory :measure do
