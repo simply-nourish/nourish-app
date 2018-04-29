@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+
   api_version(:module => "V1", :path => {:value => "v1"}) do
   end
   # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
@@ -13,5 +14,8 @@ Rails.application.routes.draw do
 
   resources :ingredients, only: [:show, :update, :destroy]
 
+  # set up dietary_restrictions routes
+  resources :dietary_restrictions
+  
 end
 
