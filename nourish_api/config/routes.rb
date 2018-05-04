@@ -13,7 +13,7 @@ Rails.application.routes.draw do
     resources :ingredients, only: [:index, :create]
   end
 
-  resources :ingredients, only: [:show, :update, :destroy]
+  resources :ingredients, only: [:index, :show, :update, :destroy]
 
   # set up dietary_restrictions routes
   resources :dietary_restrictions
