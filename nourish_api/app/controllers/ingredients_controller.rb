@@ -3,12 +3,19 @@
 
 class IngredientsController < ApplicationController
 
-  before_action :set_ingredient_category, only: [:index, :create]
   before_action :set_ingredient, only: [:show, :update, :destroy]
 
-  # GET /ingredient_categories/:ingredient_category_id/ingredients/
   def index
-    render json: @ingredientcategory.ingredients, status: :ok
+    # GET /ingredient_categories/:ingredient_category_id/ingredients/
+    if params[:ingredient_category_id]
+      set_ingredient_category()
+      render json: @ingredientcategory.ingredients, status: :ok
+    
+    # GET /ingredients
+    else
+      @ingredients = Ingredient.all
+      render json: @ingredients, status: :ok
+    end
   end
 
   # GET /ingredients/:id
@@ -18,6 +25,7 @@ class IngredientsController < ApplicationController
 
   # POST /ingredient_categories/:ingredient_category_id/ingredients/
   def create 
+    set_ingredient_category()
     @ingredientcategory.ingredients.create!(ingredient_params)
     render json: @ingredientcategory, status: :created
   end
