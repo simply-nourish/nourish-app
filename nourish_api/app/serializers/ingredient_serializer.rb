@@ -1,7 +1,7 @@
 # app/serializers/ingredient_serializer.rb
-# Ingredient model serializer
+# ingredient model serializer
 
 class IngredientSerializer < ActiveModel::Serializer
   attributes :id, :name
-  has_one :ingredient_category 
+  has_one :ingredient_category
 end
