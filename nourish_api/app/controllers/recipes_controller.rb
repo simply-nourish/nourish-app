@@ -30,7 +30,6 @@ class RecipesController < ApplicationController
       render json: @recipe, status: :created
     else
       render status: :not_found
-   #   raise ActiveRecord::RecordInvalid
     end
   end
 

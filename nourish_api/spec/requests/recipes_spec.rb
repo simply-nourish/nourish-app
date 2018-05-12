@@ -4,6 +4,7 @@
 
 require 'rails_helper'
 require 'support/request_spec_helper'
+require 'json'
 
 RSpec.describe 'Recipes API', type: :request do
 
@@ -103,28 +104,46 @@ RSpec.describe 'Recipes API', type: :request do
       
   end # end describe block
 
-  describe "POST /users/:id/recipes" do
-    let(:valid_params) { { recipe: { title: 'New Recipe', 
-                             summary: 'A new recipe for you, just you.', 
-                             instructions: 'turn left on I-95, second gas station on the left',
-                            #   dietary_restrictions: [dietary_restriction_id: 1],
-                             ingredient_recipes_attributes: [ 
-                                                            { ingredient_id: 1, measure_id: 1, amount: 1 }, 
-                                                            { ingredient_id: 2, measure_id: 2, amount: 2 } 
-                                                          ]
-                             } 
-                       } }         
+  # spec for POST /ingredient_categories/:ingredient_category_id/ingredients
+  describe 'POST /users/:id/recipes' do
+  
+    let!(:user_1) { create(:user) } 
+    let!(:uid_1) { user_1.id }
 
-    context 'when request is valid' do
-      before { post "/users/#{uid_1}/recipes", params: valid_params }
-        
-        it 'creates a recipe' do
-          expect(response).to have_http_status 200
-          #    expect( json['recipe'].title).to eq 'New Recipe'
-        end
+    let!(:ingredient_category) { create(:ingredient_category) }
+    let!(:ingredient) { create(:ingredient, ingredient_category_id: ingredient_category.id) }
+    let(:iid) { ingredient.id }
 
+    let!(:measure) { create(:measure) }
+    let!(:mid) { measure.id }
+
+
+    let(:valid_attrs) { { :recipe => {
+                           title: 'myrecipe', summary: 'it\'s a new one', 
+                           instructions: 'do a thing', 
+                           ingredient_recipes_attributes: [
+                                { ingredient_id: "#{iid}", measure_id: "#{mid}", amount: '3' } ] 
+                           } 
+                        } 
+                      }
+     
+    context 'when request attributes are valid' do
+      before { post "/users/#{uid_1}/recipes", params: valid_attrs }
+
+      it 'returns status code 201' do
+        expect(response).to have_http_status 201
+      end
+    end
+
+    context 'when request attributes are invalid' do
+      before { post "/users/#{uid_1}/recipes", params: {} }
+
+      it 'returns status code 400' do
+        expect(response).to have_http_status 400
       end
 
+    end
+ 
 
   end # end describe block
 
@@ -143,4 +162,3 @@ RSpec.describe 'Recipes API', type: :request do
   end # end describe block
 
 end # end test
-
