@@ -34,7 +34,7 @@ class UsersController < ApplicationController
 
     # define acceptable params
     def user_params
-      params.permit(:first_name, :last_name, :email, :nickname, :default_servings)
+      params.permit(:id, :first_name, :last_name, :email, :nickname, :default_servings)
     end
 
     def set_user

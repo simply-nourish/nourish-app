@@ -103,8 +103,27 @@ RSpec.describe 'Recipes API', type: :request do
       
   end # end describe block
 
-  describe "POST/recipes/" do
+  describe "POST /users/:id/recipes" do
+    let(:valid_params) { { recipe: { title: 'New Recipe', 
+                             summary: 'A new recipe for you, just you.', 
+                             instructions: 'turn left on I-95, second gas station on the left',
+                            #   dietary_restrictions: [dietary_restriction_id: 1],
+                             ingredient_recipes_attributes: [ 
+                                                            { ingredient_id: 1, measure_id: 1, amount: 1 }, 
+                                                            { ingredient_id: 2, measure_id: 2, amount: 2 } 
+                                                          ]
+                             } 
+                       } }         
 
+    context 'when request is valid' do
+      before { post "/users/#{uid_1}/recipes", params: valid_params }
+        
+        it 'creates a recipe' do
+          expect(response).to have_http_status 200
+          #    expect( json['recipe'].title).to eq 'New Recipe'
+        end
+
+      end
 
 
   end # end describe block

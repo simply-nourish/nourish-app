@@ -24,8 +24,14 @@ class RecipesController < ApplicationController
   # POST /users/:id/recipes
   def create
     set_user()
-    @user.recipes.create!(recipe_post_params)
-    render json: @recipe, status: :created
+    @recipe = @user.recipes.create(recipe_post_params)
+
+    if @recipe.persisted?
+      render json: @recipe, status: :created
+    else
+      render status: :not_found
+   #   raise ActiveRecord::RecordInvalid
+    end
   end
 
   # PUT /recipes/:id
@@ -45,11 +51,12 @@ class RecipesController < ApplicationController
 
     # define acceptable params for post, patch
     def recipe_post_params
-      params.require(:title, :summary, :instructions, ingredient_recipes_attributes: [:ingredient_id, :recipe_id, :measure_id, :amount])
+      # need to integrate dietary restrictions
+       params.require(:recipe).permit(:title, :summary, :instructions, ingredient_recipes_attributes:[:ingredient_id, :measure_id, :amount] )
     end
 
     def recipe_patch_params
-      params.permit(:title, :summary, :instructions, ingredient_recipes_attributes: [:ingredient_id, :recipe_id, :measure_id, :amount])
+      params.require(:recipe).permit(:title, :summary, :instructions, ingredient_recipes_attributes:[:ingredient_id, :measure_id, :amount] )
     end      
 
     def set_user
