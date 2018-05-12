@@ -53,8 +53,5 @@ class DeviseTokenAuthCreateUsers < ActiveRecord::Migration[5.1]
     add_index :users, :reset_password_token, unique: true
     add_index :users, :confirmation_token,   unique: true
     # add_index :users, :unlock_token,       unique: true
-    #remove_foreign_key :recipes, :users
-    add_foreign_key :meal_plans, :users
-    add_foreign_key :shopping_lists, :users
   end
 end

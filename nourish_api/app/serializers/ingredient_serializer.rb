@@ -3,5 +3,5 @@
 
 class IngredientSerializer < ActiveModel::Serializer
   attributes :id, :name
-  has_one :ingredient_category 
-end
+  has_one :ingredient_category
+end 
