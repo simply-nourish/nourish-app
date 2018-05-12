@@ -4,6 +4,8 @@ services:
 
 gemfile: nourish_api/Gemfile
 
+rakefile: nourish_api/Rakefile
+
 env:
   - "RAILS_ENV=test"
 
