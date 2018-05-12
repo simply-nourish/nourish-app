@@ -22,7 +22,7 @@ module ExceptionHandler
     end
 
     # handle 'parameter missing' errors
-    # return error message + '422'
+    # return error message + '400'
     rescue_from ActionController::ParameterMissing do |e|
       render :nothing => true, status: :bad_request
     end

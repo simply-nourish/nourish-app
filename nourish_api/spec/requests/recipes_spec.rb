@@ -23,6 +23,10 @@ RSpec.describe 'Recipes API', type: :request do
 
   let(:id) { user_1_recipes.first.id }
 
+  #
+  # spec for GET /users/:id/recipes
+  #
+
   describe "GET /users/:id/recipes" do
     before { get "/users/#{uid_1}/recipes" }
 
@@ -54,6 +58,10 @@ RSpec.describe 'Recipes API', type: :request do
 
   end # end describe
 
+  #
+  # spec for GET /recipes
+  #
+
   describe "GET /recipes" do
     before { get "/recipes" } 
 
@@ -70,8 +78,12 @@ RSpec.describe 'Recipes API', type: :request do
     end
 
   end
+  
+  #
+  # spec for GET /recipes/:id
+  #
 
-  describe "GET/recipes/:id" do
+  describe "GET /recipes/:id" do
 
     before { get "/recipes/#{id}" }
 
@@ -104,11 +116,13 @@ RSpec.describe 'Recipes API', type: :request do
       
   end # end describe block
 
-  # spec for POST /ingredient_categories/:ingredient_category_id/ingredients
+  #
+  # spec for POST /users/:id/recipes
+  #
+
   describe 'POST /users/:id/recipes' do
   
-    let!(:user_1) { create(:user) } 
-    let!(:uid_1) { user_1.id }
+    # creating some test data...building known good data 
 
     let!(:ingredient_category) { create(:ingredient_category) }
     let!(:ingredient) { create(:ingredient, ingredient_category_id: ingredient_category.id) }
@@ -117,6 +131,7 @@ RSpec.describe 'Recipes API', type: :request do
     let!(:measure) { create(:measure) }
     let!(:mid) { measure.id }
 
+    # use that data to build our recipe request
 
     let(:valid_attrs) { { :recipe => {
                            title: 'myrecipe', summary: 'it\'s a new one', 
@@ -144,20 +159,54 @@ RSpec.describe 'Recipes API', type: :request do
 
     end
  
+  end # end describe block
+
+  #
+  # spec for PUT /recipes
+  #
+
+  describe "PUT /recipes" do
+
+    let(:valid_attrs) { { recipe: { title: 'croque monsieur' } } }
+    before { put "/recipes/#{id}", params: valid_attrs }
+
+    context 'when recipe exists' do
+      it 'returns status code 204' do
+        expect(response).to have_http_status 204
+      end
+
+      it 'updates the recipe' do
+        updated_recipe = Recipe.find(id)
+        expect(updated_recipe.title).to match /croque monsieur/
+      end
+    end # end context
+
+    context 'when recipe does not exist' do
+
+      let(:id) { 0 }
+      it 'returns status code 404' do
+        expect(response).to have_http_status 404
+      end
+
+      it 'returns a not found message' do
+        expect(response.body).to match /Couldn't find Recipe/
+      end
+
+    end # end context
 
   end # end describe block
 
+  #
+  # spec for DELETE /recipes
+  #
 
-  describe "PUT/recipes/" do
+  describe 'DELETE /recipes/:id' do
 
+    before { delete "/recipes/#{id}"}
 
-
-  end # end describe block
-
-
-  describe "DELETE/recipes/" do
-
-
+    it 'returns status code 204' do
+      expect(response).to have_http_status 204
+    end
 
   end # end describe block
 

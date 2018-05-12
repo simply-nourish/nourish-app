@@ -24,7 +24,7 @@ class RecipesController < ApplicationController
   # POST /users/:id/recipes
   def create
     set_user()
-    @recipe = @user.recipes.create(recipe_post_params)
+    @recipe = @user.recipes.create(recipe_params)
 
     if @recipe.persisted?
       render json: @recipe, status: :created
@@ -36,7 +36,7 @@ class RecipesController < ApplicationController
   # PUT /recipes/:id
   def update
     set_recipe()
-    @recipe.update(recipe_post_params)
+    @recipe.update(recipe_params)
   end
 
   # DELETE /recipes/:id
@@ -49,14 +49,10 @@ class RecipesController < ApplicationController
   private
 
     # define acceptable params for post, patch
-    def recipe_post_params
+    def recipe_params
       # need to integrate dietary restrictions
        params.require(:recipe).permit(:title, :summary, :instructions, ingredient_recipes_attributes:[:ingredient_id, :measure_id, :amount] )
     end
-
-    def recipe_patch_params
-      params.require(:recipe).permit(:title, :summary, :instructions, ingredient_recipes_attributes:[:ingredient_id, :measure_id, :amount] )
-    end      
 
     def set_user
       @user = User.find(params[:user_id])
