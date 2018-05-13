@@ -1,17 +1,23 @@
 language: ruby
+
 services:
   - mysql
 
-gemfile: nourish_api/Gemfile
+before_install:
+  - gem update --system
+  - gem install bundler
 
-rakefile: nourish_api/Rakefile
+bundler_args: --full-index
+
+gemfile: nourish_api/Gemfile
 
 env:
   - "RAILS_ENV=test"
 
 before_script:
+  - cd nourish_api
+  - cp ./.travis.database.yml ./config/database.yml
   - RAILS_ENV=test rake db:create db:migrate
 
 script:
-  - cd nourish-api
   - bundle exec rspec
