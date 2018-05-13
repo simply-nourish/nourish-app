@@ -21,13 +21,11 @@ Rails.application.routes.draw do
 
   # set up users / recipes
   # (1 user : m recipes)
-  resources :users do
+  resources :users, only: [:index, :show] do
     resources :recipes, only: [:index, :create]
   end
   # allow GET /recipes as well
   resources :recipes, only: [:index, :show, :update, :destroy]
 
-
-  
 end
 

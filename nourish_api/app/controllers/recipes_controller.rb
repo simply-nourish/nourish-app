@@ -1,11 +1,15 @@
+# Recipes controller
+# /app/controllers/recipes_controller.rb
+
 class RecipesController < ApplicationController
 
   before_action :set_recipe, only: [:show, :update, :destroy]
- # before_action :authenticate_user!, only: [:create, :update, :destroy]
+  before_action :authenticate_user!, only: [:create, :update, :destroy]
 
   # GET /recipes (public only) --> do search with query params
   # GET /users/:id/recipes
   def index
+    
     if params[:user_id]
       set_user()
       render json: @user.recipes, status: :ok
@@ -13,6 +17,7 @@ class RecipesController < ApplicationController
       @recipes = Recipe.all
       render json: @recipes, status: :ok
     end
+    
   end
 
   # GET /recipes/:id
