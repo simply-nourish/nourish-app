@@ -75,8 +75,6 @@ RSpec.describe 'Users API', type: :request do
       expect(response).to have_http_status(401)
     end
 
-
-
   end # end context
 
   context 'modifying user account (PUT /auth)' do
