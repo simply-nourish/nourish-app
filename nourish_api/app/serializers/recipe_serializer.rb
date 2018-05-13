@@ -5,5 +5,5 @@ class RecipeSerializer < ActiveModel::Serializer
   attributes :id, :title, :summary, :instructions
   has_many :ingredient_recipes
   has_many :dietary_restrictions
-  has_one :user
+  has_one :user, :serializer => AbbrevUserSerializer
 end
