@@ -13,11 +13,21 @@ Rails.application.routes.draw do
   resources :ingredient_categories do
     resources :ingredients, only: [:index, :create]
   end
-
-  resources :ingredients, only: [:show, :update, :destroy]
+  # allow GET /ingredients as well
+  resources :ingredients, only: [:index, :show, :update, :destroy]
 
   # set up dietary_restrictions routes
   resources :dietary_restrictions
+
+  # set up users / recipes
+  # (1 user : m recipes)
+  resources :users do
+    resources :recipes, only: [:index, :create]
+  end
+  # allow GET /recipes as well
+  resources :recipes, only: [:index, :show, :update, :destroy]
+
+
   
 end
 

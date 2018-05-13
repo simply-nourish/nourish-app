@@ -3,7 +3,6 @@ class CreateMeasures < ActiveRecord::Migration[5.1]
 
     create_table :measures do |t|
       t.string :name
-
       t.timestamps
     end
   end

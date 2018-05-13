@@ -28,6 +28,9 @@ gem 'omniauth'
 # Use Rack CORS for handling Cross-Origin Resource Sharing (CORS), making cross-origin AJAX possible
 gem 'rack-cors'
 
+# active-model-serializer for effectively nesting JSON responses
+gem 'active_model_serializers'
+
 # A plugin for versioning Rails based RESTful APIs.
 gem 'versionist'
 

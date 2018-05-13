@@ -21,6 +21,12 @@ module ExceptionHandler
       render json: {message: e.message}, status: :unprocessable_entity
     end
 
+    # handle 'parameter missing' errors
+    # return error message + '400'
+    rescue_from ActionController::ParameterMissing do |e|
+      render :nothing => true, status: :bad_request
+    end
+
   end
 
 end

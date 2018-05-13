@@ -1,0 +1,17 @@
+language: ruby
+services:
+  - mysql
+
+gemfile: nourish_api/Gemfile
+
+rakefile: nourish_api/Rakefile
+
+env:
+  - "RAILS_ENV=test"
+
+before_script:
+  - RAILS_ENV=test rake db:create db:migrate
+
+script:
+  - cd nourish-api
+  - bundle exec rspec
