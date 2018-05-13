@@ -13,6 +13,13 @@ RSpec.describe 'Recipes API', type: :request do
   let(:num_restrictions) { 0 }
 
   let!(:user_1) { create(:user) } 
+  subject { auth_post user_1, '/auth', params: {  email: user_1.email,
+                                                password: user_1.password,
+                                                password_confirmation: user_1.password, 
+                                                confirm_success_url: "www.google.com" } }
+
+  
+
   let!(:user_2) { create(:user) }
 
   let!(:uid_1) { user_1.id }
@@ -28,7 +35,8 @@ RSpec.describe 'Recipes API', type: :request do
   #
 
   describe "GET /users/:id/recipes" do
-    before { get "/users/#{uid_1}/recipes" }
+    before { auth_get user_1, "/users/#{user_1.id}/recipes", params: {} }
+  #  before { get "/users/#{uid_1}/recipes", headers: user_1.headers }
 
     context 'when recipes are in database' do
     
@@ -143,7 +151,7 @@ RSpec.describe 'Recipes API', type: :request do
                       }
      
     context 'when request attributes are valid' do
-      before { post "/users/#{uid_1}/recipes", params: valid_attrs }
+      before { auth_post user_1, "/users/#{user_1.id}/recipes", params: valid_attrs }
 
       it 'returns status code 201' do
         expect(response).to have_http_status 201
@@ -151,7 +159,7 @@ RSpec.describe 'Recipes API', type: :request do
     end
 
     context 'when request attributes are invalid' do
-      before { post "/users/#{uid_1}/recipes", params: {} }
+      before { auth_post user_1, "/users/#{user_1.id}/recipes", params: {} }
 
       it 'returns status code 400' do
         expect(response).to have_http_status 400
@@ -168,7 +176,7 @@ RSpec.describe 'Recipes API', type: :request do
   describe "PUT /recipes" do
 
     let(:valid_attrs) { { recipe: { title: 'croque monsieur' } } }
-    before { put "/recipes/#{id}", params: valid_attrs }
+    before { auth_put user_1, "/recipes/#{id}", params: valid_attrs }
 
     context 'when recipe exists' do
       it 'returns status code 204' do
@@ -202,7 +210,7 @@ RSpec.describe 'Recipes API', type: :request do
 
   describe 'DELETE /recipes/:id' do
 
-    before { delete "/recipes/#{id}"}
+    before { auth_delete user_1, "/recipes/#{id}", params: {} }
 
     it 'returns status code 204' do
       expect(response).to have_http_status 204

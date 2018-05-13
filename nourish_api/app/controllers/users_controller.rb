@@ -1,33 +1,28 @@
+# Users controller
+# /app/controllers/users_controller.rb
+
 class UsersController < ApplicationController
 
- # before_action :authenticate_user!
+  # NOTE: create, delete, put actions all handled by devise_token_auth
+
+  before_action :authenticate_user!
 
   # GET /users
   def index
-  @users = User.all()
-  render json: @users, status: :ok
+    @users = User.all()
+    render json: @users, each_serializer: AbbrevUserSerializer, status: :ok
   end
 
   # GET /users/:id
   def show 
     set_user()
-    render json: @user, status: :ok
-  end
-
-  # POST /users
-  def create
-    @user = User.create!(user_params)
-    render json: @user, status: :created
-  end
-
-  # PUT /users/:id
-  def update
-    
-  end
-
-  # DELETE /users/:id
-  def destroy
-    
+    if( (current_user.id).to_s == ( params[:id]).to_s )
+      # allow expanded user data for current user
+      render json: @user, serializer: CompleteUserSerializer, status: :ok
+    else
+      # restrict data shown about other users
+      render json: @user, serializer: AbbrevUserSerializer, status: :ok
+    end
   end
 
   private
