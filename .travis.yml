@@ -12,14 +12,13 @@ bundler_args: --full-index
 
 gemfile: nourish_api/Gemfile
 
-rakefile: nourish_api/Rakefile
-
 env:
   - "RAILS_ENV=test"
 
 before_script:
+  - cd nourish_api
   - RAILS_ENV=test rake db:create db:migrate
 
 script:
-  - cd nourish-api
+  - cd nourish_api
   - bundle exec rspec
