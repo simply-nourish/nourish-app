@@ -1,6 +1,9 @@
 language: ruby
+
 services:
   - mysql
+
+bundler_args: --full-index
 
 gemfile: nourish_api/Gemfile
 
