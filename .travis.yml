@@ -17,6 +17,7 @@ env:
 
 before_script:
   - cd nourish_api
+  - cp ./.travis.database.yml ./config/database.yml
   - RAILS_ENV=test rake db:create db:migrate
 
 script:
