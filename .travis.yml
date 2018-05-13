@@ -6,7 +6,6 @@ services:
 before_install:
   - gem update --system
   - gem install bundler
-  - gem install mini_portile2 --version '2.3.0'
 
 bundler_args: --full-index
 
@@ -21,5 +20,4 @@ before_script:
   - RAILS_ENV=test rake db:create db:migrate
 
 script:
-  - cd nourish_api
   - bundle exec rspec
