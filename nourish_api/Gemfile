@@ -13,9 +13,6 @@ gem 'mysql2', '>= 0.3.18', '< 0.6.0'
 # Use Puma as the app server
 gem 'puma', '~> 3.7'
 
-gem 'mini_portile2', '~> 2.3.0'
-gem 'nokogiri'
-
 # Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
 # gem 'jbuilder', '~> 2.5'
 # Use Redis adapter to run Action Cable in production
@@ -25,9 +22,6 @@ gem 'nokogiri'
 #gem 'devise'
 gem 'devise_token_auth'
 gem 'omniauth'
-
-
-
 
 # Use Capistrano for deployment
 # gem 'capistrano-rails', group: :development
