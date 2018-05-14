@@ -9,14 +9,11 @@ before_install:
 
 bundler_args: --full-index
 
-gemfile: nourish_api/Gemfile
-
 env:
   - "RAILS_ENV=test"
 
 before_script:
-  - cd nourish_api
-  - cp ./.travis.database.yml ./config/database.yml
+  - cp .travis.database.yml config/database.yml
   - RAILS_ENV=test rake db:create db:migrate
 
 script:
