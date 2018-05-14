@@ -9,15 +9,13 @@ class RecipesController < ApplicationController
   # GET /recipes (public only) --> do search with query params
   # GET /users/:id/recipes
   def index
-    
     if params[:user_id]
       set_user()
       render json: @user.recipes, status: :ok
     else
       @recipes = Recipe.all
       render json: @recipes, status: :ok
-    end
-    
+    end 
   end
 
   # GET /recipes/:id
@@ -58,6 +56,22 @@ class RecipesController < ApplicationController
       render status: :unauthorized
     end
   end
+
+  # GET /recipes/search
+  def search
+
+    if params[:q] && params[:q].length > 0
+    # search for partial matches with LIKE %param%
+    # prioritize title matches, then summary matches, then others
+      @recipes = Recipe.where('title LIKE ?', "%#{params[:q]}%").or(
+                  Recipe.where('summary LIKE ?', "%#{params[:q]}%")).or( 
+                  Recipe.where('instructions LIKE ?', "%#{params[:q]}%") )
+  
+      render json: @recipes, status: :ok
+    else
+      render json: [], status: :ok
+    end 
+  end 
 
   private
 

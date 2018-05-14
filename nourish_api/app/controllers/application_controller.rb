@@ -4,6 +4,8 @@
 class ApplicationController < ActionController::API
    
   include DeviseTokenAuth::Concerns::SetUserByToken
+  include ActiveRecord::Sanitization::ClassMethods
+
   include ExceptionHandler
 
   before_action :configure_permitted_parameters, if: :devise_controller?
