@@ -59,7 +59,6 @@ class RecipesController < ApplicationController
 
   # GET /recipes/search
   def search
-
     if params[:q] && params[:q].length > 0
     # search for partial matches with LIKE %param%
     # prioritize title matches, then summary matches, then others
