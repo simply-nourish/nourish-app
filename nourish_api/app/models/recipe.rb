@@ -10,7 +10,10 @@ class Recipe < ApplicationRecord
   # allow Recipe model to create ingredient_recipes
   accepts_nested_attributes_for :ingredient_recipes
 
-  # can have many dietary restrictions
-  has_and_belongs_to_many :dietary_restrictions
+  # allow Recipe model to create dietary_restrictions_recipes
+  has_many :dietary_restriction_recipes, dependent: :destroy
+
+  # allow Recipe model to create dietary_restrictions_recipes
+  accepts_nested_attributes_for :dietary_restriction_recipes
 
 end

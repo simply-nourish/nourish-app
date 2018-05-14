@@ -1,4 +1,4 @@
-# DiectaryRestrictions controller
+# DietaryRestrictions controller
 # /app/controllers/dietary_restrictions_controller.rb
 
 class DietaryRestrictionsController < ApplicationController

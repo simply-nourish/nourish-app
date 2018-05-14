@@ -13,6 +13,7 @@ Rails.application.routes.draw do
   resources :ingredient_categories do
     resources :ingredients, only: [:index, :create]
   end
+
   # allow GET /ingredients as well
   resources :ingredients, only: [:index, :show, :update, :destroy]
 
@@ -21,13 +22,23 @@ Rails.application.routes.draw do
 
   # set up users / recipes
   # (1 user : m recipes)
-  resources :users do
+  resources :users, only: [:index, :show] do
     resources :recipes, only: [:index, :create]
   end
-  # allow GET /recipes as well
-  resources :recipes, only: [:index, :show, :update, :destroy]
-
-
   
+  # allow GET /recipes as well
+  resources :recipes, only: [:index, :update, :destroy]
+
+  # specify exact form of GET /recipes/:id to avoid conflict with /search 
+  # :id can only contain digits
+  get '/:id', to: 'recipes#show', constraints: { id: /\d.+/ }
+
+  # add recipes/search route
+  resources :recipes do 
+    collection do
+      get 'search'
+    end 
+  end 
+
 end
 

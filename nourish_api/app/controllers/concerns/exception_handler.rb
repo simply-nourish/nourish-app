@@ -7,7 +7,6 @@ module ExceptionHandler
   extend ActiveSupport::Concern
 
   included do 
-
     # handle 'record not found' errors
     # return error message+ '404'
     rescue_from ActiveRecord::RecordNotFound do |e|

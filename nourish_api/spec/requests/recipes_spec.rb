@@ -10,16 +10,21 @@ RSpec.describe 'Recipes API', type: :request do
 
   let(:num_recipes) { 5 }
   let(:num_ingredients) { 10 }
-  let(:num_restrictions) { 0 }
+  let(:num_restrictions) { 2 }
 
   let!(:user_1) { create(:user) } 
+  subject { auth_post user_1, '/auth', params: {  email: user_1.email,
+                                                  password: user_1.password,
+                                                  password_confirmation: user_1.password, 
+                                                  confirm_success_url: "www.google.com" } }
+
   let!(:user_2) { create(:user) }
 
   let!(:uid_1) { user_1.id }
   let!(:uid_2) { user_2.id }
 
-  let!(:user_1_recipes) { create_recipe_list(user_1, num_recipes, num_ingredients) }
-  let!(:user_2_recipes) { create_recipe_list(user_2, num_recipes, num_ingredients) }
+  let!(:user_1_recipes) { create_recipe_list(user_1, num_recipes, num_ingredients, num_restrictions ) }
+  let!(:user_2_recipes) { create_recipe_list(user_2, num_recipes, num_ingredients, 0 ) }
 
   let(:id) { user_1_recipes.first.id }
 
@@ -28,7 +33,8 @@ RSpec.describe 'Recipes API', type: :request do
   #
 
   describe "GET /users/:id/recipes" do
-    before { get "/users/#{uid_1}/recipes" }
+    before { auth_get user_1, "/users/#{user_1.id}/recipes", params: {} }
+  #  before { get "/users/#{uid_1}/recipes", headers: user_1.headers }
 
     context 'when recipes are in database' do
     
@@ -49,7 +55,7 @@ RSpec.describe 'Recipes API', type: :request do
 
       it 'returns appropriate dietary restrictions' do
         json.each do |rec|
-          rest = rec['dietary_restrictions']
+          rest = rec['dietary_restriction_recipes']
           expect(rest.size).to eq num_restrictions
         end
       end
@@ -143,7 +149,7 @@ RSpec.describe 'Recipes API', type: :request do
                       }
      
     context 'when request attributes are valid' do
-      before { post "/users/#{uid_1}/recipes", params: valid_attrs }
+      before { auth_post user_1, "/users/#{user_1.id}/recipes", params: valid_attrs }
 
       it 'returns status code 201' do
         expect(response).to have_http_status 201
@@ -151,7 +157,7 @@ RSpec.describe 'Recipes API', type: :request do
     end
 
     context 'when request attributes are invalid' do
-      before { post "/users/#{uid_1}/recipes", params: {} }
+      before { auth_post user_1, "/users/#{user_1.id}/recipes", params: {} }
 
       it 'returns status code 400' do
         expect(response).to have_http_status 400
@@ -168,7 +174,7 @@ RSpec.describe 'Recipes API', type: :request do
   describe "PUT /recipes" do
 
     let(:valid_attrs) { { recipe: { title: 'croque monsieur' } } }
-    before { put "/recipes/#{id}", params: valid_attrs }
+    before { auth_put user_1, "/recipes/#{id}", params: valid_attrs }
 
     context 'when recipe exists' do
       it 'returns status code 204' do
@@ -183,7 +189,7 @@ RSpec.describe 'Recipes API', type: :request do
 
     context 'when recipe does not exist' do
 
-      let(:id) { 0 }
+      let(:id) { -1 }
       it 'returns status code 404' do
         expect(response).to have_http_status 404
       end
@@ -194,6 +200,20 @@ RSpec.describe 'Recipes API', type: :request do
 
     end # end context
 
+    context 'when user not authroized to PUT' do
+      before { auth_put user_1, "/recipes/#{user_2.recipes.first.id}", params: valid_attrs }
+      let!(:prevname) { user_2.recipes.first.title }
+
+      it 'returns unauthorized' do
+        expect(response).to have_http_status 401
+      end
+
+      it 'has not modified the name' do
+        expect(user_2.recipes.first.title).to eq prevname
+      end
+
+    end # end ontext 
+
   end # end describe block
 
   #
@@ -202,10 +222,24 @@ RSpec.describe 'Recipes API', type: :request do
 
   describe 'DELETE /recipes/:id' do
 
-    before { delete "/recipes/#{id}"}
+    context 'when authorized user attempts to delete' do
 
-    it 'returns status code 204' do
-      expect(response).to have_http_status 204
+      before { auth_delete user_1, "/recipes/#{user_1.recipes.first.id}", params: {} }
+  
+      it 'returns status code 204' do
+        expect(response).to have_http_status 204
+      end
+
+    end
+
+    context 'when unauthorized user attempts to delete' do
+      
+      before { auth_delete user_1, "/recipes/#{user_2.recipes.first.id}", params: {} }
+
+      it 'returns unauthorized' do
+        expect(response).to have_http_status 401
+      end 
+
     end
 
   end # end describe block
