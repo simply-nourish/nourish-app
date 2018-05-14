@@ -153,7 +153,7 @@ RSpec.describe 'Ingredient API', type: :request do
   # spec for DELETE /ingredients/:id
   describe 'DELETE /ingredients/:id' do
 
-    before { delete "/ingredients/#{id}"}
+    before { delete "/ingredients/#{id}" }
 
     it 'returns status code 204' do
       expect(response).to have_http_status 204

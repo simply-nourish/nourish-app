@@ -20,11 +20,18 @@ User.create!(email: 'foo@bar.com',
             default_servings: 1)
 
 IngredientCategory.create!(name: 'condiments')  
-IngredientCategory.create!(name: 'meat')                
+IngredientCategory.create!(name: 'meat')      
+
 Ingredient.create!(name: 'salt', ingredient_category_id: 1)
 Ingredient.create!(name: 'flounder', ingredient_category_id: 2)
+
 Measure.create!(name: 'cup')
 Measure.create!(name: 'lb')
+
 Recipe.create!(title: 'fishsticks', summary: 'some good fishsticks', instructions: 'put them in the oven', user_id: 1)
+
 IngredientRecipe.create!(ingredient_id: 1, measure_id: 1, recipe_id: 1, amount: 3.5)
 IngredientRecipe.create!(ingredient_id: 2, measure_id: 2, recipe_id: 1, amount: 2)
+
+DietaryRestriction.create!(name: 'vegan')
+DietaryRestriction.create!(name: 'vegetarian')
