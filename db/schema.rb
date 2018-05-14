@@ -12,17 +12,17 @@
 
 ActiveRecord::Schema.define(version: 20180511045535) do
 
-  create_table "dietary_restriction_recipes", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
-    t.bigint "dietary_restriction_id"
-    t.bigint "recipe_id"
-    t.index ["dietary_restriction_id"], name: "index_dietary_restriction_recipes_on_dietary_restriction_id"
-    t.index ["recipe_id"], name: "index_dietary_restriction_recipes_on_recipe_id"
-  end
-
   create_table "dietary_restrictions", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
     t.string "name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "dietary_restrictions_recipes", id: false, force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
+    t.bigint "dietary_restriction_id"
+    t.bigint "recipe_id"
+    t.index ["dietary_restriction_id"], name: "index_dietary_restrictions_recipes_on_dietary_restriction_id"
+    t.index ["recipe_id"], name: "index_dietary_restrictions_recipes_on_recipe_id"
   end
 
   create_table "ingredient_categories", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
