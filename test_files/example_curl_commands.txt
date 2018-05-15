@@ -80,17 +80,18 @@ curl -X PUT -D - \
 -d @change_user_data_back.json https://nourish-backend.herokuapp.com/auth; echo
 
 
-## 9. sign out (note: if change the user account data back, you'll need to change the 'uid' header, too) ##
+## 9. sign out (note: if you didn't change the user account data back, you'll need to change the 'uid' header, too) ##
 
 curl -X DELETE -D - \
 -H "Access-Token: (received access-token)" \
 -H "Client: (received client)" \
--H "uid: richardstallman@gmail.com" \
+-H "uid: user@example.com" \
 -H "Content-Type: application/json; charset utf-8" \
 https://nourish-backend.herokuapp.com/auth/sign_out; echo
 
 
 ## 9. test sign out (should return 401 Unauthorized) ## 
+##    (note: if you didn't change the user account data back, you'll need to update the 'uid' header, too) ##
 
 curl -D - \
 -H "Access-Token: (received access-token)" \
