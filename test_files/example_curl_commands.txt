@@ -1,0 +1,101 @@
+## example cURL commands for interacting with the JSON API ##
+## be sure to keep in same directory as the .json files also included with our .zip archive ##
+## Also note that any authenticated routes (step 4 -- 8) require user to be authenticated first, as in step 3. 
+
+## 1. get list of all recipes ##
+
+curl -D - https://nourish-backend.herokuapp.com/recipes; echo
+
+
+## 2. return list of all recipes with keyword "fishsticks" ##
+
+curl -D - https://nourish-backend.herokuapp.com/recipes/search?q=fishsticks; echo
+
+
+#
+# Authenticated Routes
+#
+
+## 3. sign in a user ##
+
+curl -D - --header "Content-Type: application/json" -d @sign_in.json \
+https://nourish-backend.herokuapp.com/auth/sign_in; echo 
+
+## 4. create a recipe (NOTE: remove parens in command below) ##
+
+curl -D - \
+-H "Access-Token: (received access-token)" \
+-H "Client: (received client)" \
+-H "uid: user@example.com" \
+-H  "Content-Type: application/json; charset utf-8" \
+-d @test_recipe.json https://nourish-backend.herokuapp.com/users/2/recipes
+
+## 5. Retrieve a user's recipes (NOTE: remove parens in command below) ##
+
+curl -D - \
+-H "Access-Token: (received access-token)" \
+-H "Client: (received client)" \
+-H "uid: user@example.com" \
+-H  "Content-Type: application/json; charset utf-8" \
+https://nourish-backend.herokuapp.com/users/2/recipes
+
+
+## 6. retrieve abbreviated list of all users (NOTE: remove parens in command below) ##
+
+curl -D - \
+-H "Access-Token: (received access-token)" \
+-H "Client: (received client)" \
+-H "uid: user@example.com" \
+-H "Content-Type: application/json; charset utf-8" \
+https://nourish-backend.herokuapp.com/users/; echo
+
+
+## 7. retrieve specific info about yourself (NOTE: remove parens in command below) ##
+
+curl -D - \
+-H "Access-Token: (received access-token)" \
+-H "Client: (received client)" \
+-H "uid: user@example.com" \
+-H "Content-Type: application/json; charset utf-8" \
+https://nourish-backend.herokuapp.com/users/2; echo
+
+
+## 8. update your account  (NOTE: remove parens in command below) ##
+
+curl -X PUT -D - \
+-H "Access-Token: (received access-token)" \
+-H "Client: (received client)" \
+-H "uid: user@example.com" \
+-H "Content-Type: application/json; charset utf-8" \
+-d @change_user_data.json https://nourish-backend.herokuapp.com/auth; echo
+
+
+## 8a. (if you wish) change data back (NOTE: remove parens in command below) ##
+
+curl -X PUT -D - \
+-H "Access-Token: (received access-token)" \
+-H "Client: (received client)" \
+-H "uid: richardstallman@gmail.com" \
+-H "Content-Type: application/json; charset utf-8" \
+-d @change_user_data_back.json https://nourish-backend.herokuapp.com/auth; echo
+
+
+## 9. sign out (note: if change the user account data back, you'll need to change the 'uid' header, too) ##
+
+curl -X DELETE -D - \
+-H "Access-Token: (received access-token)" \
+-H "Client: (received client)" \
+-H "uid: richardstallman@gmail.com" \
+-H "Content-Type: application/json; charset utf-8" \
+https://nourish-backend.herokuapp.com/auth/sign_out; echo
+
+
+## 9. test sign out (should return 401 Unauthorized) ## 
+
+curl -D - \
+-H "Access-Token: (received access-token)" \
+-H "Client: (received client)" \
+-H "uid: user@example.com" \
+-H "Content-Type: application/json; charset utf-8" \
+https://nourish-backend.herokuapp.com/users/; echo
+

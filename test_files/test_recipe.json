@@ -1,0 +1,16 @@
+{    
+  "recipe" : { 
+    "title" : "eggs",       
+    "summary" : "eggs are good",     
+    "instructions" : "fry 'em up",     
+    "ingredient_recipes_attributes" : [ 
+                                          { 
+                                            "measure_id" : "2", 
+                                            "amount" : "2", 
+                                            "ingredient_id": "2" 
+                                          }
+                                       ],
+    "dietary_restriction_recipes_attributes" : [ {"dietary_restriction_id" : "2"} ]
+  }
+}
+
