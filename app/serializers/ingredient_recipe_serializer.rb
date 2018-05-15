@@ -2,7 +2,7 @@
 # IngredientRecipe model serializer
 
 class IngredientRecipeSerializer < ActiveModel::Serializer
-  attributes :amount, :measure
+  attributes :amount
+  has_one :measure, :serializer => MeasureSerializer
   has_one :ingredient, :serializer => ShortIngredientSerializer
-
 end
