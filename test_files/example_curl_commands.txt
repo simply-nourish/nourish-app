@@ -91,7 +91,7 @@ https://nourish-backend.herokuapp.com/auth/sign_out; echo
 
 
 ## 9. test sign out (should return 401 Unauthorized) ## 
-##    (note: if you changed the user account data back, you'll need to update the 'uid' header, too )) ##
+##    (note: if you didn't change the user account data back, you'll need to update the 'uid' header, too) ##
 
 curl -D - \
 -H "Access-Token: (received access-token)" \
