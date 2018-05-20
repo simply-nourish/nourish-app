@@ -3,8 +3,6 @@
 
 include ActionController::RespondWith
 
-Faker::UniqueGenerator.clear
-
 require 'rails_helper'
 require 'support/request_spec_helper'
 require 'json'
