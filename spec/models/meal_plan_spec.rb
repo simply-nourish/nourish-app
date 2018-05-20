@@ -6,8 +6,9 @@ RSpec.describe MealPlan, type: :model do
   it { is_expected.to validate_presence_of :name }
   
   describe 'uniqueness validations' do
-    subject { MealPlan.new(name: 'My Plan') }
-    it { is_expected.to validate_uniqueness_of :name }
+    let!(:test_user) { create(:user) }
+    subject { MealPlan.new(user: test_user, name: 'My Plan') }
+    it { is_expected.to validate_uniqueness_of(:user_id).scoped_to(:name)}
   end
 
   # must belong to one user
