@@ -15,7 +15,6 @@ RSpec.describe IngredientRecipe, type: :model do
   it { is_expected.to belong_to :measure }
 
   describe 'uniqueness validations' do 
-
     let!(:test_user) { create(:user) }
     let!(:test_recipe) { create(:recipe, user: test_user) }
     let!(:test_ingredient_category) { create(:ingredient_category) }

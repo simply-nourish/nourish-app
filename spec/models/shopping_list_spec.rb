@@ -6,7 +6,6 @@ RSpec.describe ShoppingList, type: :model do
   it { is_expected.to validate_presence_of :name }
 
   describe 'uniqueness validations' do 
-
     let!(:test_user){ create(:user) }
     subject { ShoppingList.new(name: 'Cups', user: test_user) }
     it { is_expected.to validate_uniqueness_of(:user_id).scoped_to(:name) }
