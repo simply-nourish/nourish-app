@@ -4,6 +4,8 @@
 
 require 'rails_helper'
 
+Faker::UniqueGenerator.clear
+
 RSpec.describe 'Ingredient API', type: :request do
   let!(:ingredient_category) { create(:ingredient_category) }
   let!(:ingredients) { create_list(:ingredient, 10, ingredient_category_id: ingredient_category.id) }

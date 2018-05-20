@@ -10,4 +10,7 @@ class Ingredient < ApplicationRecord
   # must have a name
   validates_presence_of :name
 
+  #name must be unique
+  validates_uniqueness_of :name
+
 end

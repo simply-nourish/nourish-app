@@ -3,7 +3,7 @@
 
 FactoryBot.define do
   factory :ingredient do
-    name { Faker::Lorem.word }
+    name { Faker::Lorem.unique.word }
     ingredient_category_id nil
   end
 end

@@ -15,6 +15,7 @@ ActiveRecord::Schema.define(version: 20180511045535) do
   create_table "dietary_restriction_recipes", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
     t.bigint "dietary_restriction_id"
     t.bigint "recipe_id"
+    t.index ["dietary_restriction_id", "recipe_id"], name: "dietary_restriction_recipes_index", unique: true
     t.index ["dietary_restriction_id"], name: "index_dietary_restriction_recipes_on_dietary_restriction_id"
     t.index ["recipe_id"], name: "index_dietary_restriction_recipes_on_recipe_id"
   end
@@ -35,11 +36,12 @@ ActiveRecord::Schema.define(version: 20180511045535) do
     t.bigint "recipe_id"
     t.bigint "ingredient_id"
     t.bigint "measure_id"
-    t.float "amount", limit: 24
+    t.float "amount", limit: 24, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["ingredient_id"], name: "index_ingredient_recipes_on_ingredient_id"
     t.index ["measure_id"], name: "index_ingredient_recipes_on_measure_id"
+    t.index ["recipe_id", "ingredient_id", "measure_id"], name: "ingredient_recipes_index", unique: true
     t.index ["recipe_id"], name: "index_ingredient_recipes_on_recipe_id"
   end
 
@@ -53,9 +55,10 @@ ActiveRecord::Schema.define(version: 20180511045535) do
 
   create_table "meal_plans", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
     t.bigint "user_id"
-    t.string "name"
+    t.string "name", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["name", "user_id"], name: "index_meal_plans_on_name_and_user_id", unique: true
     t.index ["user_id"], name: "index_meal_plans_on_user_id"
   end
 
@@ -66,21 +69,23 @@ ActiveRecord::Schema.define(version: 20180511045535) do
   end
 
   create_table "recipes", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
-    t.string "title"
+    t.string "title", null: false
     t.bigint "user_id"
     t.string "source"
-    t.text "summary"
-    t.text "instructions"
+    t.text "summary", null: false
+    t.text "instructions", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["title", "user_id"], name: "index_recipes_on_title_and_user_id", unique: true
     t.index ["user_id"], name: "index_recipes_on_user_id"
   end
 
   create_table "shopping_lists", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
-    t.string "name"
+    t.string "name", null: false
     t.bigint "user_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["name", "user_id"], name: "index_shopping_lists_on_name_and_user_id", unique: true
     t.index ["user_id"], name: "index_shopping_lists_on_user_id"
   end
 

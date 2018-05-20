@@ -3,6 +3,6 @@
 
 FactoryBot.define do
   factory :dietary_restriction do
-    name { Faker::Lorem.word }
+    name { Faker::Lorem.unique.word }
   end
 end

@@ -6,6 +6,8 @@ require 'rails_helper'
 require 'support/request_spec_helper'
 require 'json'
 
+Faker::UniqueGenerator.clear
+
 RSpec.describe 'Recipes API', type: :request do
 
   let(:num_recipes) { 5 }
