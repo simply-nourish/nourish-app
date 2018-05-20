@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180511045535) do
+ActiveRecord::Schema.define(version: 20180520200239) do
 
   create_table "dietary_restriction_recipes", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
     t.bigint "dietary_restriction_id"
@@ -51,6 +51,18 @@ ActiveRecord::Schema.define(version: 20180511045535) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["ingredient_category_id"], name: "index_ingredients_on_ingredient_category_id"
+  end
+
+  create_table "meal_plan_recipes", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
+    t.bigint "recipe_id"
+    t.bigint "meal_plan_id"
+    t.integer "meal", default: 1
+    t.integer "day", default: 1
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["meal_plan_id"], name: "index_meal_plan_recipes_on_meal_plan_id"
+    t.index ["recipe_id", "meal_plan_id", "meal", "day"], name: "meal_plan_recipes_index", unique: true
+    t.index ["recipe_id"], name: "index_meal_plan_recipes_on_recipe_id"
   end
 
   create_table "meal_plans", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
@@ -125,6 +137,8 @@ ActiveRecord::Schema.define(version: 20180511045535) do
   add_foreign_key "ingredient_recipes", "measures"
   add_foreign_key "ingredient_recipes", "recipes"
   add_foreign_key "ingredients", "ingredient_categories"
+  add_foreign_key "meal_plan_recipes", "meal_plans"
+  add_foreign_key "meal_plan_recipes", "recipes"
   add_foreign_key "meal_plans", "users"
   add_foreign_key "recipes", "users"
   add_foreign_key "shopping_lists", "users"
