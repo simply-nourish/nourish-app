@@ -14,4 +14,7 @@ class User < ActiveRecord::Base
   # if a user is deleted, also delete associated recipes
   has_many :recipes, dependent: :destroy
 
+  # user nicknames must be unique
+  validates_uniqueness_of :nickname
+
 end

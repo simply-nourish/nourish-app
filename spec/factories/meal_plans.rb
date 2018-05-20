@@ -3,7 +3,7 @@
 
 FactoryBot.define do
   factory :meal_plan do
-    name { Faker::Lorem.word }
+    name { Faker::Lorem.unique.word }
     user_id nil
   end
 end

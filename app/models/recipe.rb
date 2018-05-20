@@ -16,4 +16,7 @@ class Recipe < ApplicationRecord
   # allow Recipe model to create dietary_restrictions_recipes
   accepts_nested_attributes_for :dietary_restriction_recipes
 
+  # user can't create multiple recipes with identical titles
+  validates_uniqueness_of :user_id, :scope => :title
+
 end

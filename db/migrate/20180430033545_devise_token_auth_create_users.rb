@@ -35,11 +35,11 @@ class DeviseTokenAuthCreateUsers < ActiveRecord::Migration[5.1]
       # t.datetime :locked_at
 
       ## User Info
-      t.string :nickname
-      t.string :first_name
-      t.string :last_name
+      t.string :nickname, unique: true, :null => false
+      t.string :first_name, :null => false
+      t.string :last_name, :null => false
       t.string :image
-      t.string :email
+      t.string :email, unique: true, :null => false
       t.integer :default_servings
 
       ## Tokens
@@ -48,10 +48,8 @@ class DeviseTokenAuthCreateUsers < ActiveRecord::Migration[5.1]
       t.timestamps
     end
 
-    add_index :users, :email,                unique: true
     add_index :users, [:uid, :provider],     unique: true
     add_index :users, :reset_password_token, unique: true
     add_index :users, :confirmation_token,   unique: true
-    # add_index :users, :unlock_token,       unique: true
   end
 end
