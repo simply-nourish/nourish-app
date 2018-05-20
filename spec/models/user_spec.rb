@@ -14,8 +14,8 @@ RSpec.describe User, type: :model do
   it { is_expected.to have_many(:recipes).dependent(:destroy) }
 
   describe 'uniqueness validations' do 
-    subject { User.new(nickname: 'User', email: 'foo@bar.com') }
+    subject { create(:user) }
     it { is_expected.to validate_uniqueness_of :nickname }
-    end 
+  end 
 
 end
