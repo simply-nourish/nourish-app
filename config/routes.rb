@@ -20,14 +20,19 @@ Rails.application.routes.draw do
   # set up dietary_restrictions routes
   resources :dietary_restrictions
 
-  # set up users / recipes
+  # set up users + recipes, meal_plans
   # (1 user : m recipes)
+  # (1 user : m meal_plans )
   resources :users, only: [:index, :show] do
     resources :recipes, only: [:index, :create]
+    resources :meal_plans, only: [:index, :create]
   end
   
   # allow GET /recipes as well
   resources :recipes, only: [:index, :update, :destroy]
+
+  # allow PUT / DELETE meal_plans
+  resources :meal_plans, only: [:update, :destroy]
 
   # specify exact form of GET /recipes/:id to avoid conflict with /search 
   # :id can only contain digits

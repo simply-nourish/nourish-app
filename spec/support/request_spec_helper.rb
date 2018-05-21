@@ -44,4 +44,20 @@ module RequestSpecHelper
 
   end
 
+  #
+  # create a meal plan + assign recipes, given a user and a list of recipes
+  #
+
+  def create_meal_plan(user, recipes) 
+
+    # create a recipe with random ingredients, restrictions
+    meal_plan = create(:meal_plan, user_id: user.id)
+    recipes.each do |rec|
+      create(:meal_plan_recipe, recipe_id: rec.id, meal_plan_id: meal_plan.id)
+    end 
+
+    return meal_plan
+
+  end 
+
 end
