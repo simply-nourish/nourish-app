@@ -31,18 +31,18 @@ Rails.application.routes.draw do
   # allow GET /recipes as well
   resources :recipes, only: [:index, :update, :destroy]
 
-  # allow PUT / DELETE meal_plans
-  resources :meal_plans, only: [:update, :destroy]
-
   # specify exact form of GET /recipes/:id to avoid conflict with /search 
   # :id can only contain digits
-  get '/:id', to: 'recipes#show', constraints: { id: /\d.+/ }
+  get 'recipes/:id', to: 'recipes#show', constraints: { id: /\d.+/ }
+
+  # allow PUT / DELETE meal_plans
+  resources :meal_plans, only: [:show, :update, :destroy]
 
   # add recipes/search route
   resources :recipes do 
     collection do
       get 'search'
-    end 
+    end  
   end 
 
 end

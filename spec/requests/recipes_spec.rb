@@ -26,6 +26,8 @@ RSpec.describe 'Recipes API', type: :request do
   let!(:user_1_recipes) { create_recipe_list(user_1, num_recipes, num_ingredients, num_restrictions ) }
   let!(:user_2_recipes) { create_recipe_list(user_2, num_recipes, num_ingredients, 0 ) }
 
+  let(:user_2_first_title) { user_2_recipes.first.title }
+
   let(:id) { user_1_recipes.first.id }
 
   #
@@ -202,7 +204,7 @@ RSpec.describe 'Recipes API', type: :request do
 
     context 'when user not authroized to PUT' do
       before { auth_put user_1, "/recipes/#{user_2.recipes.first.id}", params: valid_attrs }
-      let!(:prevname) { user_2.recipes.first.title }
+      let!(:prevname) { user_2_first_title }
 
       it 'returns unauthorized' do
         expect(response).to have_http_status 401

@@ -60,4 +60,16 @@ module RequestSpecHelper
 
   end 
 
+  def create_meal_plan_list(user, num_meal_plans, recipes_per_meal_plan) 
+
+    meal_plan_list = Array.new
+    num_meal_plans.times do
+      recipes = create_list(:recipe, recipes_per_meal_plan, user_id: user.id)
+      meal_plan_list << create_meal_plan(user, recipes)
+    end 
+
+    return meal_plan_list
+
+  end 
+
 end
