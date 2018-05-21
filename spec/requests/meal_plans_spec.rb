@@ -60,7 +60,7 @@ RSpec.describe 'MealPlans API', type: :request do
       it 'returns status code unauthorized' do
         expect(response).to have_http_status(401)
       end 
-    end
+    end # end context
 
   end # end describe
 

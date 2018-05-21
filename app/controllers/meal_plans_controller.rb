@@ -1,3 +1,6 @@
+# MealPlans controller
+# /app/controllers/meal_plans_controller.rb
+
 class MealPlansController < ApplicationController
 
   before_action :authenticate_user!  

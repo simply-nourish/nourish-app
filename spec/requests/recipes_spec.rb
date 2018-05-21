@@ -28,7 +28,7 @@ RSpec.describe 'Recipes API', type: :request do
 
   let(:user_2_first_title) { user_2_recipes.first.title }
 
-  let(:id) { user_1_recipes.first.id }
+  let(:user_1_first_rec_id) { user_1_recipes.first.id }
 
   #
   # spec for GET /users/:id/recipes
@@ -93,7 +93,7 @@ RSpec.describe 'Recipes API', type: :request do
 
   describe "GET /recipes/:id" do
 
-    before { get "/recipes/#{id}" }
+    before { get "/recipes/#{user_1_first_rec_id}" }
 
     context 'when recipe exists' do
 
@@ -103,14 +103,14 @@ RSpec.describe 'Recipes API', type: :request do
       end
       
       it 'returns the recipe' do
-        expect(json['id']).to eq id
+        expect(json['id']).to eq user_1_first_rec_id
       end
 
     end
 
     context 'when recipe record does not exist' do
  
-      let(:id) { -1 }
+      let(:user_1_first_rec_id) { -1 }
      
       it 'returns status code 404' do
         expect(response).to have_http_status 404
@@ -176,7 +176,7 @@ RSpec.describe 'Recipes API', type: :request do
   describe "PUT /recipes" do
 
     let(:valid_attrs) { { recipe: { title: 'croque monsieur' } } }
-    before { auth_put user_1, "/recipes/#{id}", params: valid_attrs }
+    before { auth_put user_1, "/recipes/#{user_1_first_rec_id}", params: valid_attrs }
 
     context 'when recipe exists' do
       it 'returns status code 204' do
@@ -184,14 +184,14 @@ RSpec.describe 'Recipes API', type: :request do
       end
 
       it 'updates the recipe' do
-        updated_recipe = Recipe.find(id)
+        updated_recipe = Recipe.find(user_1_first_rec_id)
         expect(updated_recipe.title).to match /croque monsieur/
       end
     end # end context
 
     context 'when recipe does not exist' do
 
-      let(:id) { -1 }
+      let(:user_1_first_rec_id) { -1 }
       it 'returns status code 404' do
         expect(response).to have_http_status 404
       end
