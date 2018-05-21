@@ -27,12 +27,16 @@ class MealPlansController < ApplicationController
 
   # POST /users/:id/meal_plans
   def create
-    @meal_plan = @user.meal_plans.create!(meal_plan_params)
-    if @meal_plan.persisted?
-      render json: @meal_plan, status: :created
+    if @user == current_user
+      @meal_plan = @user.meal_plans.create!(meal_plan_params)
+      if @meal_plan.persisted?
+        render json: @meal_plan, status: :created
+      else
+        render status: :not_found
+      end
     else
-      render status: :not_found
-    end
+      render status: :unauthorized
+    end 
   end
 
   # PUT /meal_plans/:id

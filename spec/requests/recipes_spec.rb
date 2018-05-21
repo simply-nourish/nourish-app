@@ -164,8 +164,15 @@ RSpec.describe 'Recipes API', type: :request do
       it 'returns status code 400' do
         expect(response).to have_http_status 400
       end
-
     end
+
+    context 'when user is not authorized to POST' do
+      before { auth_post user_1, "/users/#{user_2.id}/recipes", params: {} }
+
+      it 'returns unauthorized' do
+        expect(response).to have_http_status 401
+      end
+    end 
  
   end # end describe block
 
@@ -202,7 +209,7 @@ RSpec.describe 'Recipes API', type: :request do
 
     end # end context
 
-    context 'when user not authroized to PUT' do
+    context 'when user not authorized to PUT' do
       before { auth_put user_1, "/recipes/#{user_2.recipes.first.id}", params: valid_attrs }
       let!(:prevname) { user_2_first_title }
 

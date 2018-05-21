@@ -141,6 +141,14 @@ RSpec.describe 'MealPlans API', type: :request do
         expect(response).to have_http_status 400
       end
     end
+
+    context 'when user is not authorized to POST' do
+      before { auth_post user_1, "/users/#{user_2.id}/meal_plans", params: {} }
+
+      it 'returns unauthorized' do
+        expect(response).to have_http_status 401
+      end
+    end 
  
   end # end describe block
 
