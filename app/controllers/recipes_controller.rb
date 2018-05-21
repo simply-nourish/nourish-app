@@ -27,12 +27,16 @@ class RecipesController < ApplicationController
   # POST /users/:id/recipes
   def create
     set_user()
-    @recipe = @user.recipes.create!(recipe_params)
-    if @recipe.persisted?
-      render json: @recipe, status: :created
-    else
-      render status: :not_found
-    end
+    if @user == current_user
+      @recipe = @user.recipes.create!(recipe_params)
+      if @recipe.persisted?
+        render json: @recipe, status: :created
+      else
+        render status: :not_found
+      end
+    else 
+      render status: :unauthorized
+    end 
   end
 
   # PUT /recipes/:id

@@ -26,7 +26,9 @@ RSpec.describe 'Recipes API', type: :request do
   let!(:user_1_recipes) { create_recipe_list(user_1, num_recipes, num_ingredients, num_restrictions ) }
   let!(:user_2_recipes) { create_recipe_list(user_2, num_recipes, num_ingredients, 0 ) }
 
-  let(:id) { user_1_recipes.first.id }
+  let(:user_2_first_title) { user_2_recipes.first.title }
+
+  let(:user_1_first_rec_id) { user_1_recipes.first.id }
 
   #
   # spec for GET /users/:id/recipes
@@ -91,7 +93,7 @@ RSpec.describe 'Recipes API', type: :request do
 
   describe "GET /recipes/:id" do
 
-    before { get "/recipes/#{id}" }
+    before { get "/recipes/#{user_1_first_rec_id}" }
 
     context 'when recipe exists' do
 
@@ -101,14 +103,14 @@ RSpec.describe 'Recipes API', type: :request do
       end
       
       it 'returns the recipe' do
-        expect(json['id']).to eq id
+        expect(json['id']).to eq user_1_first_rec_id
       end
 
     end
 
     context 'when recipe record does not exist' do
  
-      let(:id) { -1 }
+      let(:user_1_first_rec_id) { -1 }
      
       it 'returns status code 404' do
         expect(response).to have_http_status 404
@@ -162,8 +164,15 @@ RSpec.describe 'Recipes API', type: :request do
       it 'returns status code 400' do
         expect(response).to have_http_status 400
       end
-
     end
+
+    context 'when user is not authorized to POST' do
+      before { auth_post user_1, "/users/#{user_2.id}/recipes", params: {} }
+
+      it 'returns unauthorized' do
+        expect(response).to have_http_status 401
+      end
+    end 
  
   end # end describe block
 
@@ -174,7 +183,7 @@ RSpec.describe 'Recipes API', type: :request do
   describe "PUT /recipes" do
 
     let(:valid_attrs) { { recipe: { title: 'croque monsieur' } } }
-    before { auth_put user_1, "/recipes/#{id}", params: valid_attrs }
+    before { auth_put user_1, "/recipes/#{user_1_first_rec_id}", params: valid_attrs }
 
     context 'when recipe exists' do
       it 'returns status code 204' do
@@ -182,14 +191,14 @@ RSpec.describe 'Recipes API', type: :request do
       end
 
       it 'updates the recipe' do
-        updated_recipe = Recipe.find(id)
+        updated_recipe = Recipe.find(user_1_first_rec_id)
         expect(updated_recipe.title).to match /croque monsieur/
       end
     end # end context
 
     context 'when recipe does not exist' do
 
-      let(:id) { -1 }
+      let(:user_1_first_rec_id) { -1 }
       it 'returns status code 404' do
         expect(response).to have_http_status 404
       end
@@ -200,9 +209,9 @@ RSpec.describe 'Recipes API', type: :request do
 
     end # end context
 
-    context 'when user not authroized to PUT' do
+    context 'when user not authorized to PUT' do
       before { auth_put user_1, "/recipes/#{user_2.recipes.first.id}", params: valid_attrs }
-      let!(:prevname) { user_2.recipes.first.title }
+      let!(:prevname) { user_2_first_title }
 
       it 'returns unauthorized' do
         expect(response).to have_http_status 401

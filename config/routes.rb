@@ -20,10 +20,12 @@ Rails.application.routes.draw do
   # set up dietary_restrictions routes
   resources :dietary_restrictions
 
-  # set up users / recipes
+  # set up users + recipes, meal_plans
   # (1 user : m recipes)
+  # (1 user : m meal_plans )
   resources :users, only: [:index, :show] do
     resources :recipes, only: [:index, :create]
+    resources :meal_plans, only: [:index, :create]
   end
   
   # allow GET /recipes as well
@@ -31,13 +33,16 @@ Rails.application.routes.draw do
 
   # specify exact form of GET /recipes/:id to avoid conflict with /search 
   # :id can only contain digits
-  get '/:id', to: 'recipes#show', constraints: { id: /\d.+/ }
+  get 'recipes/:id', to: 'recipes#show', constraints: { id: /\d.+/ }
+
+  # allow PUT / DELETE meal_plans
+  resources :meal_plans, only: [:show, :update, :destroy]
 
   # add recipes/search route
   resources :recipes do 
     collection do
       get 'search'
-    end 
+    end  
   end 
 
 end
