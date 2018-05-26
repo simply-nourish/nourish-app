@@ -4,8 +4,11 @@ class MealPlan < ApplicationRecord
   validates_presence_of :name
   validates_uniqueness_of :user_id, :scope => :name
 
-  # meal plan has a 1:m relationship with user
+  # meal plan has a m:1 relationship with user
   belongs_to :user
+
+  # meal plan can have many shopping lists
+  has_many :shopping_lists, dependent: :destroy
 
   # describe m:n relationship between meal plans and recipes
   has_many :meal_plan_recipes, dependent: :destroy
