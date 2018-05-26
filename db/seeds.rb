@@ -62,3 +62,10 @@ vegetarian = DietaryRestriction.create!(name: 'vegetarian')
 # create a recipe with a dietary restriction
 DietaryRestrictionRecipe.create(recipe: fishsticks, dietary_restriction: vegan)
 
+# create a meal plan for User One
+user_one_mp = MealPlan.create!(user: user1, name: 'Plan One')
+
+# associate with recipes
+MealPlanRecipe.create!(meal_plan: user_one_mp, recipe: fishsticks, day: "monday", meal: "snack")
+MealPlanRecipe.create!(meal_plan: user_one_mp, recipe: croque_monsieur, day: "monday", meal: "breakfast")
+
