@@ -67,8 +67,8 @@ class RecipesController < ApplicationController
     # search for partial matches with LIKE %param%
     # prioritize title matches, then summary matches, then others
       @recipes = Recipe.where('title LIKE ?', "%#{params[:q]}%").or(
-                  Recipe.where('summary LIKE ?', "%#{params[:q]}%")).or( 
-                  Recipe.where('instructions LIKE ?', "%#{params[:q]}%") )
+                 Recipe.where('summary LIKE ?', "%#{params[:q]}%")).or( 
+                 Recipe.where('instructions LIKE ?', "%#{params[:q]}%") )
   
       render json: @recipes, status: :ok
     else
