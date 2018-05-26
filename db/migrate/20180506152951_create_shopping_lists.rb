@@ -7,7 +7,7 @@ class CreateShoppingLists < ActiveRecord::Migration[5.1]
       t.timestamps
     end
 
-    add_index :shopping_lists, [:name, :user_id, :meal_plan_id], unique: true
+    add_index :shopping_lists, [:name, :user_id], unique: true
 
   end
 end

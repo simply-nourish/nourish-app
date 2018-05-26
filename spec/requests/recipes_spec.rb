@@ -8,8 +8,8 @@ require 'json'
 
 RSpec.describe 'Recipes API', type: :request do
 
-  let(:num_recipes) { 5 }
-  let(:num_ingredients) { 10 }
+  let(:num_recipes) { 3 }
+  let(:num_ingredients) { 5 }
   let(:num_restrictions) { 2 }
 
   let!(:user_1) { create(:user) } 
