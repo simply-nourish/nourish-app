@@ -7,6 +7,10 @@ class ShoppingListsController < ApplicationController
   before_action :set_shopping_list, only: [:show, :update, :destroy]
   before_action :set_user, only: [:index, :create]
 
+  #
+  # GET /users/:id/shopping_lists
+  #
+
   def index
     if @user == current_user
       render json: @user.shopping_lists, status: :ok
@@ -14,6 +18,10 @@ class ShoppingListsController < ApplicationController
       render status: :unauthorized
     end 
   end 
+
+  #
+  # GET /users/:id/shopping_lists/:id
+  #
 
   def show
     if @shopping_list.user == current_user
@@ -23,8 +31,11 @@ class ShoppingListsController < ApplicationController
     end 
   end
 
-  # POST /users/id/shopping_lists
+  #
+  # POST /users/:id/shopping_lists
   # params: meal_plan_id, name (i.e., shopping list name)
+  #
+
   def create
 
     if @user != current_user
@@ -33,12 +44,10 @@ class ShoppingListsController < ApplicationController
 
     # will store aggregated data. format (key => value): [ingredient_id, measure_id] => amount
     ing_amt_map = {}
-    
+
     # find meal plan, create an initial shopping list with that meal plan
     @meal_plan = MealPlan.find(shopping_list_params[:meal_plan_id])
-
     @shopping_list = @user.shopping_lists.create!(shopping_list_params)
-  #  @shopping_list = ShoppingList.create!(name: params[:name], user: @user, meal_plan: @meal_plan)
 
     # if there was a problem saving, catch it
     if @shopping_list.persisted? == false
@@ -70,8 +79,6 @@ class ShoppingListsController < ApplicationController
     # now, create ingredient_shopping_lists with aggregated data
     ing_amt_map.each do |key, agg_amount|
       @shopping_list.ingredient_shopping_lists.create!(ingredient_id: key.first, measure_id: key.second, amount: agg_amount)
-#      @shopping_list.ingredient_shopping_lists.create!(shopping_list_id: @shopping_list.id, ingredient_id: key.first, measure_id: key.second, amount: agg_amount)
-
     end 
 
     # render resulting shopping list and its attendant ingredients
