@@ -208,6 +208,7 @@ RSpec.describe 'Recipes API', type: :request do
 
     context 'when recipe exists' do
       before { auth_put user_1, "/recipes/#{user_1_recipe.id}", params: valid_attrs }
+    
       it 'returns status code 204' do
         expect(response).to have_http_status 204
       end

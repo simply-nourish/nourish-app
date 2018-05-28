@@ -101,7 +101,15 @@ class ShoppingListsController < ApplicationController
       if( shopping_list_update_params[:ingredient_shopping_lists_attributes] )
         shopping_list_update_params[:ingredient_shopping_lists_attributes].each do |ing_sl|
           @ingredient_shopping_list = @shopping_list.ingredient_shopping_lists.find_by( ingredient_id: ing_sl[:ingredient_id], measure_id: ing_sl[:measure_id] ) 
-          @ingredient_shopping_list.update!({:amount => ing_sl[:amount], :purchased => ing_sl[:purchased]}.reject{|k,v| v.blank?})
+       
+          if @ingredient_shopping_list
+            if ing_sl[:_destroy] == '1'
+              @ingredient_shopping_list.destroy()
+            else
+              @ingredient_shopping_list.update!({:amount => ing_sl[:amount], :purchased => ing_sl[:purchased]}.reject{|k,v| v.blank?})
+            end
+          end
+
         end
       end
 
@@ -129,7 +137,7 @@ class ShoppingListsController < ApplicationController
     end
 
     def shopping_list_update_params
-      params.require(:shopping_list).permit(:name, ingredient_shopping_lists_attributes: [:ingredient_id, :measure_id, :amount, :purchased])
+      params.require(:shopping_list).permit(:name, ingredient_shopping_lists_attributes: [:ingredient_id, :measure_id, :amount, :purchased, :_destroy])
     end
 
     def set_user

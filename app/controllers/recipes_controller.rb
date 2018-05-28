@@ -52,12 +52,17 @@ class RecipesController < ApplicationController
       if( recipe_params[:ingredient_recipes_attributes])
   
         recipe_params[:ingredient_recipes_attributes].each do |ing_rec|
+        
           @ingredient_recipe = @recipe.ingredient_recipes.find_by( ingredient_id: ing_rec[:ingredient_id] ) 
-          if ing_rec[:_destroy] == '1'
-            @ingredient_recipe.destroy()
-          else
-            @ingredient_recipe.update!( {:amount => ing_rec[:amount], :measure_id => ing_rec[:measure_id]}.reject{|k,v| v.blank?} )        
+       
+          if @ingredient_recipe   
+            if ing_rec[:_destroy] == '1'
+              @ingredient_recipe.destroy()
+            else
+              @ingredient_recipe.update!( {:amount => ing_rec[:amount], :measure_id => ing_rec[:measure_id]}.reject{|k,v| v.blank?} )        
+            end 
           end
+
         end
   
       end
@@ -65,12 +70,17 @@ class RecipesController < ApplicationController
       if( recipe_params[:dietary_restriction_recipes_attributes] )
    
         recipe_params[:dietary_restriction_recipes_attributes].each do |diet_rec| 
+        
           @dietary_restriction_recipe = recipe.dietary_restriction_recipes.find_by( dietary_restriction_id: diet_rec[:dietary_restriction_id] )
-          if diet_rec[:_destroy] == '1'
-            @dietary_restriction_recipe.destroy()
-          else
-            @dietary_restriction_recipe.update!( {:dietary_restriction_id => diet_rec[:dietary_restriction_id]}.reject{|k,v| v.blank?} )        
+       
+          if @dietary_restriction_recipe 
+            if diet_rec[:_destroy] == '1'
+              @dietary_restriction_recipe.destroy()
+            else
+              @dietary_restriction_recipe.update!( {:dietary_restriction_id => diet_rec[:dietary_restriction_id]}.reject{|k,v| v.blank?} )        
+            end
           end
+       
         end
    
       end

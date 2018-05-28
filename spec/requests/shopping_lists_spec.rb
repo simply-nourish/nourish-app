@@ -194,6 +194,7 @@ RSpec.describe 'ShoppingList API', type: :request do
           expect(ing_sl["purchased"]).to eq false
         end
       end
+      
     end # end context
 
     context 'when request attributes are invalid' do
@@ -234,8 +235,8 @@ RSpec.describe 'ShoppingList API', type: :request do
     let!(:cheese) { create(:ingredient, name: "cheese", ingredient_category_id: dairy.id) }
     let!(:yogurt) { create(:ingredient, name: "yogurt", ingredient_category_id: dairy.id) }
 
-    let!(:recipe_1_ing_hash) { { milk.id => [cups.id, 1.5], cheese.id => [cups.id, 0.5] } }
-    let!(:recipe_2_ing_hash) { { milk.id => [cups.id, 0.5], cheese.id => [cups.id, 1.5], yogurt.id => [cups.id, 2.0] } }
+    let!(:recipe_1_ing_hash) { { milk.id => [cups.id, 1.5], cheese.id => [cups.id, 0.5], yogurt.id => [cups.id, 0.25] } }
+    let!(:recipe_2_ing_hash) { { milk.id => [cups.id, 0.5], cheese.id => [cups.id, 1.5], yogurt.id => [cups.id, 1.75] } }
 
     # create known recipes
     let!(:user_1_recipe_1) { create_full_recipe(user_1, recipe_1_ing_hash) }
@@ -255,7 +256,8 @@ RSpec.describe 'ShoppingList API', type: :request do
                         { 
                           shopping_list:  { 
                                             name: 'my revised shopping list',
-                                            ingredient_shopping_lists_attributes: [ { ingredient_id: "#{milk.id}", measure_id: "#{cups.id}", amount: '2.0', purchased: true } ]
+                                            ingredient_shopping_lists_attributes: [ { ingredient_id: "#{milk.id}", measure_id: "#{cups.id}", amount: '2.0', purchased: true },
+                                                                                    { ingredient_id: "#{yogurt.id}", measure_id: "#{cups.id}", _destroy: '1' } ]
                                           }
                         } 
                       }
@@ -284,8 +286,13 @@ RSpec.describe 'ShoppingList API', type: :request do
 
       it 'allows for one ingredient to be modified at a time' do
         updated_shopping_list = ShoppingList.find(user_1_shopping_list.id)
-        expect(updated_shopping_list.ingredient_shopping_lists.size()).to eq unique_ingredients
+        expect(updated_shopping_list.ingredient_shopping_lists.size()).to eq (unique_ingredients - 1)
       end
+
+      it 'destroys the appropriate ingredient from the list' do
+        destroyed_shopping_list = IngredientShoppingList.find_by(shopping_list: user_1_shopping_list, ingredient: yogurt)
+        expect(destroyed_shopping_list).to eq nil
+      end 
     end # end context
 
     context 'when shopping list does not exist' do
