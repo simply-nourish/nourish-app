@@ -6,6 +6,6 @@ FactoryBot.define do
     ingredient_id nil
     recipe_id nil
     measure_id nil
-    amount { Faker::Number.decimal(3)}
+    amount { Faker::Number.decimal(3) }
   end
 end 

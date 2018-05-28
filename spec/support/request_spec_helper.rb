@@ -9,15 +9,20 @@ module RequestSpecHelper
     JSON.parse(response.body)
   end
 
+  #
   # create a single recipe
-  def create_full_recipe(user, ingredient_measures, restrictions)
+  # note: ingredient_measures param is formatted as a hash, with: :ingredient_id => [measure_id, amount]
+  #
+
+  def create_full_recipe(user, ingredient_measures, restrictions = [])
      
     # create a new recipe
     recipe = create(:recipe, user_id: user.id)
 
     # link to join tables 
-    ingredient_measures.each do |ing_meas|
-      create(:ingredient_recipe, recipe_id: recipe.id, ingredient_id: ing_meas.first, measure_id: ing_meas.second)
+    ingredient_measures.each do |key, value|
+      create(:ingredient_recipe, recipe_id: recipe.id, ingredient_id: key, \
+              measure_id: value.first, amount: value.second)
     end
 
     restrictions.each do |rest|
@@ -33,12 +38,13 @@ module RequestSpecHelper
   #
 
   def create_recipe_list(user, num_recipes, num_ingredients, num_restrictions)
+    
     recipe_list = Array.new
 
     num_recipes.times do
 
-      # create array to store [ingredient_id, measure_id] pairs
-      ingredient_measures = Array.new
+      # create map to store :ingredient_id => [measure_id, amount] 
+      ingredient_measures = {}
 
       # create ingredients
       ingredient_category = create(:ingredient_category)
@@ -47,7 +53,11 @@ module RequestSpecHelper
       # attach ingredients to a unit of measure
       ingredients.each do |ing|
         meas = create(:measure)
-        ingredient_measures << [ing.id, meas.id]
+
+        meas_arr = [ meas.id, Faker::Number.decimal(3) ]
+        ing_id = ing.id
+
+        ingredient_measures[ ing_id ] = meas_arr
       end 
 
       # create dietary restrictions
@@ -105,6 +115,7 @@ module RequestSpecHelper
     shopping_list = create(:shopping_list, user_id: user.id, name: name, meal_plan_id: meal_plan.id )
     
     meal_plan.recipes.each do |rec|
+
       # fetch ingredient_recipes
       @recipe = Recipe.find(rec.id)   
         ingredient_recipes = @recipe.ingredient_recipes
@@ -121,6 +132,7 @@ module RequestSpecHelper
           else
             ing_amt_map[ ing_measure ] = ing_rec.amount
           end
+
         end 
 
     end 
@@ -129,15 +141,6 @@ module RequestSpecHelper
     ing_amt_map.each do |key, agg_amount|
       create(:ingredient_shopping_list, shopping_list_id: shopping_list.id, ingredient_id: key.first, measure_id: key.second, amount: agg_amount)
     end 
-
-=begin
-    puts "Printing all entries..."
-    ing_amt_map.each do |key, val|
-      puts "#{key} // #{val}"
-    end 
-
-    puts "-----------------------"
-=end
 
     return shopping_list
 

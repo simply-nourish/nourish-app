@@ -9,9 +9,12 @@ require 'json'
 RSpec.describe 'ShoppingList API', type: :request do
 
   # initial test setup 
+
+  let(:shopping_lists_per_user) { 1 }
   let(:meal_plans_per_user) { 1 }
+
   let(:recipes_per_meal_plan) { 2 }
-  let(:ingredients_per_recipe) { 3 }
+  let(:ingredients_per_recipe) { 2 }
 
   # create primary user account
   let!(:user_1) { create(:user) } 
@@ -24,56 +27,51 @@ RSpec.describe 'ShoppingList API', type: :request do
   # create secondary user account
   let!(:user_2) { create(:user) }
 
-  # create known recipes to test aggregation for shopping list
-
- # let!(user_1_recipe) { create(recipe, )}
-
-  # create, assign a set of meal plans to each user
-  #let!(:user_1_meal_plan) { create_meal_plan(user_1, user_1_recipes) }
-
   let!(:user_1_meal_plans) { create_meal_plan_list(user_1, meal_plans_per_user, recipes_per_meal_plan, ingredients_per_recipe) }
-  let!(:user_2_meal_plans) { create_meal_plan_list(user_2, meal_plans_per_user, recipes_per_meal_plan, ingredients_per_recipe) }
+  let!(:user_1_first_mp ) { user_1_meal_plans.first }
+
+  #let!(:user_2_meal_plans) { create_meal_plan_list(user_2, meal_plans_per_user, recipes_per_meal_plan, ingredients_per_recipe) }
 
   # save stored values for testing later 
   let!(:user_1_first_mp_id) { user_1_meal_plans.first.id }
-  let!(:user_2_first_mp_id) { user_2_meal_plans.first.id}
 
-  let!(:user_2_first_mp_name) { user_2_meal_plans.first.name }
-
-  # create a shopping list for primary user
-  let!(:user_1_shopping_list) { create_shopping_list(user_1, "My list", user_1_meal_plans.first) }
-  let!(:user_1_sl_id) { user_1_shopping_list.id }
-
+  #let!(:user_2_first_mp_id) { user_2_meal_plans.first.id}
+  #let!(:user_2_first_mp_name) { user_2_meal_plans.first.name }
 
   #
   # spec for GET /users/:id/shopping_lists
   #
 
   describe "GET /users/:id/shopping_lists" do
-    before { auth_get user_1, "/users/#{uid1}/shopping_lists", params: {} }
+
+    let!(:shopping_list) { create_shopping_list( user_1, "my shopping list", user_1_first_mp ) }
 
     context 'when shopping_lists are in database' do
+      before { auth_get user_1, "/users/#{uid1}/shopping_lists", params: {} }
 
       it 'returns status code 200' do
-        puts json
         expect(response).to have_http_status(200)
       end
 
       it 'returns all of that user\'s shopping lists' do
-        expect(json.size).to eq meal_plans_per_user      
+        expect(json.size).to eq (shopping_lists_per_user)      
+      end
+
+      it 'returns the appropriate shopping list name' do
+        expect(json.first['name']).to match /my shopping list/
       end
 
       it 'returns all ingredients in each shopping list' do
         json.each do |sl|
           ingredient_shopping_lists = sl['ingredient_shopping_lists']
-          expect(ingredient_shopping_lists.size).to eq (ingredients_per_recipe * recipes_per_meal_plan)
+          expect(ingredient_shopping_lists.size).to eq (recipes_per_meal_plan * ingredients_per_recipe)
         end
       end
 
     end # end context
 
     context 'when user retrieves shopping list not belonging to them' do 
-      let( :uid1 ) { user_2.id }
+      before { auth_get user_1, "/users/#{user_2.id}/shopping_lists", params: {} }
 
       it 'returns status code unauthorized' do
         expect(response).to have_http_status(401)
@@ -124,36 +122,74 @@ RSpec.describe 'ShoppingList API', type: :request do
     end # end context
       
   end # end describe block
-
+=end
   #
-  # spec for POST /users/:id/meal_plans
+  # spec for POST /users/:id/shopping_lists
   #
 
-  describe 'POST /users/:id/meal_plans' do
+  describe 'POST /users/:id/shopping_lists' do
+      
+    #
+    # INGREDIENT AGGREGATION TEST SETUP:
+    #
+
+    let(:unique_ingredients) { 3 }
+
+    # create known recipes to test aggregation for shopping list
+    let!(:cups) { create(:measure, name: "cups") }
+
+    let!(:dairy) { create(:ingredient_category, name: "dairy") }
+
+    let!(:milk) { create(:ingredient, name: "milk", ingredient_category_id: dairy.id) }
+    let!(:cheese) { create(:ingredient, name: "cheese", ingredient_category_id: dairy.id) }
+    let!(:yogurt) { create(:ingredient, name: "yogurt", ingredient_category_id: dairy.id) }
+
+    let!(:recipe_1_ing_hash) { { milk.id => [cups.id, 1.5], cheese.id => [cups.id, 0.5] } }
+    let!(:recipe_2_ing_hash) { { milk.id => [cups.id, 0.5], cheese.id => [cups.id, 1.5], yogurt.id => [cups.id, 2.0] } }
+
+    # create known recipes
+    let!(:user_1_recipe_1) { create_full_recipe(user_1, recipe_1_ing_hash) }
+    let!(:user_1_recipe_2) { create_full_recipe(user_1, recipe_2_ing_hash) }
+    let!(:user_1_recipes) { [user_1_recipe_1, user_1_recipe_2] }
   
-    # creating some test data...building known good data 
-
-    let!(:recipe) { create(:recipe, user: user_1 ) }
-    let!(:rec_id) { recipe.id }
+    # create, assign a meal plan to user one
+    let!(:user_1_meal_plan) { create_meal_plan(user_1, user_1_recipes) }
 
     # use that data to build our meal_plan request
-    let(:valid_attrs) { { :meal_plan => {
-                           name: 'my plan',
-                           meal_plan_recipes_attributes: [ {recipe_id: "#{rec_id}", day: "thursday", meal: "breakfast"} ]
-                          }
+    let(:valid_attrs) { {:shopping_list => {
+                           name: 'my shopping list',
+                           meal_plan_id: user_1_meal_plan.id
+                           } 
                         }
                       }
 
+    #
+    # RUNNING POST ROUTE TESTS:
+    #
+
     context 'when request attributes are valid' do
-      before { auth_post user_1, "/users/#{user_1.id}/meal_plans", params: valid_attrs }
+      before { auth_post user_1, "/users/#{user_1.id}/shopping_lists", params: valid_attrs }
 
       it 'returns status code 201' do
+     #   puts json 
         expect(response).to have_http_status 201
       end
+
+      it 'returns all ingredients in the created shopping list' do
+        expect(json['ingredient_shopping_lists'].size).to eq (unique_ingredients)
+      end
+
+      it 'returns appropriate amount' do
+        ingredient_shopping_lists = json['ingredient_shopping_lists']
+        ingredient_shopping_lists.each do |ing_sl|
+          expect(ing_sl["amount"]).to eq 2.0
+        end 
+      end 
+
     end
 
     context 'when request attributes are invalid' do
-      before { auth_post user_1, "/users/#{user_1.id}/meal_plans", params: {} }
+      before { auth_post user_1, "/users/#{user_1.id}/shopping_lists", params: {} }
 
       it 'returns status code 400' do
         expect(response).to have_http_status 400
@@ -161,7 +197,7 @@ RSpec.describe 'ShoppingList API', type: :request do
     end
 
     context 'when user is not authorized to POST' do
-      before { auth_post user_1, "/users/#{user_2.id}/meal_plans", params: {} }
+      before { auth_post user_1, "/users/#{user_2.id}/shopping_lists", params: {} }
 
       it 'returns unauthorized' do
         expect(response).to have_http_status 401
@@ -169,7 +205,7 @@ RSpec.describe 'ShoppingList API', type: :request do
     end 
  
   end # end describe block
-
+=begin
   #
   # spec for PUT /meal_plans
   #

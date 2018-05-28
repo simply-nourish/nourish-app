@@ -16,17 +16,66 @@ class ShoppingListsController < ApplicationController
   end 
 
   def show
-
+    if @shopping_list.user == current_user
+      render json: @shopping_list, status: :ok
+    else
+      render status: :unauthorized
+    end 
   end
 
+  # POST /users/id/shopping_lists
+  # params: meal_plan_id, name (i.e., shopping list name)
   def create
 
-    # take meal plan
+    if @user != current_user
+      render status: :unauthorized and return
+    end 
 
-    # for each recipe in meal_plan_recipes:
-    #    aggregate recipe ingredient data
+    # will store aggregated data. format (key => value): [ingredient_id, measure_id] => amount
+    ing_amt_map = {}
+    
+    # find meal plan, create an initial shopping list with that meal plan
+    @meal_plan = MealPlan.find(shopping_list_params[:meal_plan_id])
 
-    # store aggregated data
+    @shopping_list = @user.shopping_lists.create!(shopping_list_params)
+  #  @shopping_list = ShoppingList.create!(name: params[:name], user: @user, meal_plan: @meal_plan)
+
+    # if there was a problem saving, catch it
+    if @shopping_list.persisted? == false
+      render status: :not_found and return
+    end 
+
+    # for reach recipe in meal plan, collect ingredient data, aggregate / consolidate per unit of measure
+    @meal_plan.recipes.each do |rec|
+
+      # fetch ingredient_recipes
+      @recipe = Recipe.find(rec.id)   
+      ingredient_recipes = @recipe.ingredient_recipes
+      ingredient_recipes.each do |ing_rec|
+        # the key for each entry in our map will be the combination of (ingredient_id, measure_id) 
+        ing_measure = [ing_rec.ingredient_id, ing_rec.measure_id]
+
+        # check if the key exists - if so, add associated amount
+        # if the key does not exist, create new entry in map
+        if( ing_amt_map.key?(ing_measure) )
+          ing_amt_map[ ing_measure ] += ing_rec.amount
+        else
+          ing_amt_map[ ing_measure ] = ing_rec.amount
+        end
+
+      end 
+
+    end 
+
+    # now, create ingredient_shopping_lists with aggregated data
+    ing_amt_map.each do |key, agg_amount|
+      @shopping_list.ingredient_shopping_lists.create!(ingredient_id: key.first, measure_id: key.second, amount: agg_amount)
+#      @shopping_list.ingredient_shopping_lists.create!(shopping_list_id: @shopping_list.id, ingredient_id: key.first, measure_id: key.second, amount: agg_amount)
+
+    end 
+
+    # render resulting shopping list and its attendant ingredients
+    render json: @shopping_list, status: :created
 
   end 
 

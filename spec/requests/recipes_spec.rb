@@ -36,7 +36,6 @@ RSpec.describe 'Recipes API', type: :request do
 
   describe "GET /users/:id/recipes" do
     before { auth_get user_1, "/users/#{user_1.id}/recipes", params: {} }
-  #  before { get "/users/#{uid_1}/recipes", headers: user_1.headers }
 
     context 'when recipes are in database' do
     
