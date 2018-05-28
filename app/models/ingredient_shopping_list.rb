@@ -11,4 +11,5 @@ class IngredientShoppingList < ApplicationRecord
   # ingredient id + shopping list id combination must be unique
   validates_uniqueness_of :measure_id, :scope => [:shopping_list_id, :ingredient_id]
 
+
 end

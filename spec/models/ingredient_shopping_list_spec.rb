@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe IngredientShoppingList, type: :model do
   
-    # must have an amount, measure
+    # must have an amount
     it { is_expected.to validate_presence_of :amount }
 
     # must map to an ingredient 
@@ -29,5 +29,6 @@ RSpec.describe IngredientShoppingList, type: :model do
       it { is_expected.to validate_uniqueness_of(:measure_id).scoped_to(:shopping_list_id, :ingredient_id) }
     
     end
+
 
 end
