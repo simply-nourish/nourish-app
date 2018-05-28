@@ -182,6 +182,7 @@ RSpec.describe 'Recipes API', type: :request do
   describe "PUT /recipes" do
 
     let(:valid_attrs) { { recipe: { title: 'croque monsieur' } } }
+
     before { auth_put user_1, "/recipes/#{user_1_first_rec_id}", params: valid_attrs }
 
     context 'when recipe exists' do
@@ -189,7 +190,7 @@ RSpec.describe 'Recipes API', type: :request do
         expect(response).to have_http_status 204
       end
 
-      it 'updates the recipe's title do
+      it 'updates the recipe' do
         updated_recipe = Recipe.find(user_1_first_rec_id)
         expect(updated_recipe.title).to match /croque monsieur/
       end
@@ -229,25 +230,20 @@ RSpec.describe 'Recipes API', type: :request do
   #
 
   describe 'DELETE /recipes/:id' do
-
     context 'when authorized user attempts to delete' do
-
       before { auth_delete user_1, "/recipes/#{user_1.recipes.first.id}", params: {} }
   
       it 'returns status code 204' do
         expect(response).to have_http_status 204
       end
-
     end
 
-    context 'when unauthorized user attempts to delete' do
-      
+    context 'when unauthorized user attempts to delete' do     
       before { auth_delete user_1, "/recipes/#{user_2.recipes.first.id}", params: {} }
 
       it 'returns unauthorized' do
         expect(response).to have_http_status 401
       end 
-
     end
 
   end # end describe block

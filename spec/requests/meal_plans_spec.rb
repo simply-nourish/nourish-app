@@ -173,7 +173,6 @@ RSpec.describe 'MealPlans API', type: :request do
     end # end context
 
     context 'when meal plan does not exist' do
-
       let(:user_1_first_mp_id) { -1 }
       it 'returns status code 404' do
         expect(response).to have_http_status 404
@@ -182,7 +181,6 @@ RSpec.describe 'MealPlans API', type: :request do
       it 'returns a not found message' do
         expect(response.body).to match /Couldn't find MealPlan/
       end
-
     end # end context
 
     context 'when user not authorized to PUT' do
@@ -196,8 +194,7 @@ RSpec.describe 'MealPlans API', type: :request do
       it 'has not modified the name' do
         expect(user_2.meal_plans.first.name).to eq prevname
       end
-
-    end # end ontext 
+    end # end context 
 
   end # end describe block
 
@@ -208,23 +205,19 @@ RSpec.describe 'MealPlans API', type: :request do
   describe 'DELETE /meal_plans/:id' do
 
     context 'when authorized user attempts to delete' do
-
       before { auth_delete user_1, "/meal_plans/#{user_1_first_mp_id}", params: {} }
   
       it 'returns status code 204' do
         expect(response).to have_http_status 204
       end
-
     end
 
-    context 'when unauthorized user attempts to delete' do
-      
+    context 'when unauthorized user attempts to delete' do    
       before { auth_delete user_1, "/meal_plans/#{user_2_first_mp_id}", params: {} }
 
       it 'returns unauthorized' do
         expect(response).to have_http_status 401
       end 
-
     end
 
   end # end describe block
