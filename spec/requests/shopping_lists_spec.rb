@@ -81,48 +81,58 @@ RSpec.describe 'ShoppingList API', type: :request do
   end # end describe
 
   #
-  # spec for GET users/:id/meal_plans/:id
+  # spec for GET users/:id/shopping_lists/:id
   #
-=begin
-  describe "GET users/:id/meal_plans/:id" do
-    before { auth_get user_1, "/meal_plans/#{user_1_first_mp_id}", params: {} }
+
+  describe "GET users/:id/shopping_lists/:id" do
+
+    let!(:user_1_shopping_list) { create_shopping_list( user_1, "my shopping list", user_1_first_mp ) }
+    let!(:shopping_list_size) { 5 }
 
     context 'when recipe exists' do
+      
+      before { auth_get user_1, "/shopping_lists/#{user_1_shopping_list.id}", params: {} }
 
       it 'returns status code 200' do
         expect(response).to have_http_status(200)
       end
       
-      it 'returns the recipe' do
-        expect(json['id']).to eq user_1_first_mp_id
+      it 'returns the shopping list' do
+        expect(json['id']).to eq user_1_shopping_list.id
       end
+
+      it 'returns one record' do
+        expect(json.size).to eq shopping_list_size
+      end 
 
     end
 
     context 'when recipe record does not exist' do
- 
-      let(:user_1_first_mp_id) { -1 }
-     
+
+      before { auth_get user_1, "/shopping_lists/#{-3}", params: {} }
+
       it 'returns status code 404' do
         expect(response).to have_http_status 404
       end
 
       it 'returns not found message' do
-        expect(response.body).to match /Couldn't find MealPlan/
+        expect(response.body).to match /Couldn't find ShoppingList/
       end 
+
+    end 
       
-    context 'when user retrieves meal plan not belonging to them' do 
-      let(:user_1_first_mp_id) { user_2_first_mp_id }
+    context 'when user retrieves shopping list not belonging to them' do 
+
+      before { auth_get user_2, "/shopping_lists/#{user_1_shopping_list.id}", params: {} }
 
       it 'returns status code unauthorized' do
         expect(response).to have_http_status(401)
       end 
-    end
 
-    end # end context
+    end
       
   end # end describe block
-=end
+
   #
   # spec for POST /users/:id/shopping_lists
   #
@@ -171,7 +181,6 @@ RSpec.describe 'ShoppingList API', type: :request do
       before { auth_post user_1, "/users/#{user_1.id}/shopping_lists", params: valid_attrs }
 
       it 'returns status code 201' do
-     #   puts json 
         expect(response).to have_http_status 201
       end
 

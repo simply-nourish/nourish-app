@@ -71,7 +71,7 @@ RSpec.describe 'MealPlans API', type: :request do
   describe "GET users/:id/meal_plans/:id" do
     before { auth_get user_1, "/meal_plans/#{user_1_first_mp_id}", params: {} }
 
-    context 'when recipe exists' do
+    context 'when meal plan exists' do
 
       it 'returns status code 200' do
         expect(response).to have_http_status(200)
@@ -83,7 +83,7 @@ RSpec.describe 'MealPlans API', type: :request do
 
     end
 
-    context 'when recipe record does not exist' do
+    context 'when meal plan record does not exist' do
  
       let(:user_1_first_mp_id) { -1 }
      
