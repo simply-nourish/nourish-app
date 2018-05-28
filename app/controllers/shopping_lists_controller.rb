@@ -46,8 +46,8 @@ class ShoppingListsController < ApplicationController
     ing_amt_map = {}
 
     # find meal plan, create an initial shopping list with that meal plan
-    @meal_plan = MealPlan.find(shopping_list_params[:meal_plan_id])
-    @shopping_list = @user.shopping_lists.create!(shopping_list_params)
+    @meal_plan = MealPlan.find(shopping_list_create_params[:meal_plan_id])
+    @shopping_list = @user.shopping_lists.create!(shopping_list_create_params)
 
     # if there was a problem saving, catch it
     if @shopping_list.persisted? == false
@@ -76,9 +76,13 @@ class ShoppingListsController < ApplicationController
 
     end 
 
-    # now, create ingredient_shopping_lists with aggregated data
+    # now, create ingredient_shopping_lists with aggregated data - 
+    # assume all new ingredients are unpurchased
     ing_amt_map.each do |key, agg_amount|
-      @shopping_list.ingredient_shopping_lists.create!(ingredient_id: key.first, measure_id: key.second, amount: agg_amount)
+      @shopping_list.ingredient_shopping_lists.create!(ingredient_id: key.first, 
+                                                       measure_id: key.second, 
+                                                       amount: agg_amount, 
+                                                       purchased: false)
     end 
 
     # render resulting shopping list and its attendant ingredients
@@ -87,24 +91,49 @@ class ShoppingListsController < ApplicationController
   end 
 
   def update
+    
+    if @shopping_list.user == current_user
+      @shopping_list.update(:name => shopping_list_update_params[:name])
+      @ingredient_shopping_lists = @shopping_list.ingredient_shopping_lists
+      
+      # update each nested ingredient_shopping_list entry manually
+      shopping_list_update_params[:ingredient_shopping_lists_attributes].each do |ing_sl|
+        @ingredient_shopping_list = IngredientShoppingList.find_by( ingredient_id: ing_sl[:ingredient_id], measure_id: ing_sl[:measure_id] ) 
+        @ingredient_shopping_list.update!(:amount => ing_sl[:amount], :purchased => ing_sl[:purchased])
+      end
+
+      head :no_content    
+    else
+      render status: :unauthorized
+    end  
 
   end
 
   def destroy
-
+    if @shopping_list.user == current_user
+      @shopping_list.destroy()
+      head :no_content
+    else
+      render status: :unauthorized
+    end 
   end 
 
   private    # define acceptable params 
-  def shopping_list_params
-    params.require(:shopping_list).permit(:name, :meal_plan_id)
-  end
 
-  def set_user
-    @user = User.find(params[:user_id])
-  end
+    def shopping_list_create_params
+      params.require(:shopping_list).permit(:name, :meal_plan_id)
+    end
 
-  def set_shopping_list
-    @shopping_list = ShoppingList.find(params[:id])
-  end
+    def shopping_list_update_params
+      params.require(:shopping_list).permit(:name, ingredient_shopping_lists_attributes: [:ingredient_id, :measure_id, :amount, :purchased])
+    end
+
+    def set_user
+      @user = User.find(params[:user_id])
+    end
+
+    def set_shopping_list
+      @shopping_list = ShoppingList.find(params[:id])
+    end
 
 end

@@ -6,7 +6,8 @@ FactoryBot.define do
       ingredient_id nil
       shopping_list_id nil
       measure_id nil
-      amount { Faker::Number.decimal(3)}
+      amount { Faker::Number.decimal(3) }
+      purchased false
     end
   end 
   

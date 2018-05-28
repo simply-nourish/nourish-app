@@ -8,7 +8,9 @@ require 'json'
 
 RSpec.describe 'ShoppingList API', type: :request do
 
+  #
   # initial test setup 
+  #
 
   let(:shopping_lists_per_user) { 1 }
   let(:meal_plans_per_user) { 1 }
@@ -27,20 +29,17 @@ RSpec.describe 'ShoppingList API', type: :request do
   # create secondary user account
   let!(:user_2) { create(:user) }
 
+  # populate user one's meal plans
   let!(:user_1_meal_plans) { create_meal_plan_list(user_1, meal_plans_per_user, recipes_per_meal_plan, ingredients_per_recipe) }
   let!(:user_1_first_mp ) { user_1_meal_plans.first }
 
-  #let!(:user_2_meal_plans) { create_meal_plan_list(user_2, meal_plans_per_user, recipes_per_meal_plan, ingredients_per_recipe) }
+  # populate user two's meal plans
+  let!(:user_2_meal_plans) { create_meal_plan_list(user_2, meal_plans_per_user, recipes_per_meal_plan, ingredients_per_recipe) }
+  let!(:user_2_first_mp ) { user_2_meal_plans.first }
 
-  # save stored values for testing later 
-  let!(:user_1_first_mp_id) { user_1_meal_plans.first.id }
-
-  #let!(:user_2_first_mp_id) { user_2_meal_plans.first.id}
-  #let!(:user_2_first_mp_name) { user_2_meal_plans.first.name }
-
-  #
+  ##########################
   # spec for GET /users/:id/shopping_lists
-  #
+  ##########################
 
   describe "GET /users/:id/shopping_lists" do
 
@@ -80,17 +79,16 @@ RSpec.describe 'ShoppingList API', type: :request do
 
   end # end describe
 
-  #
+  ##########################
   # spec for GET users/:id/shopping_lists/:id
-  #
-
+  ##########################
+  
   describe "GET users/:id/shopping_lists/:id" do
 
     let!(:user_1_shopping_list) { create_shopping_list( user_1, "my shopping list", user_1_first_mp ) }
     let!(:shopping_list_size) { 5 }
 
-    context 'when recipe exists' do
-      
+    context 'when recipe exists' do 
       before { auth_get user_1, "/shopping_lists/#{user_1_shopping_list.id}", params: {} }
 
       it 'returns status code 200' do
@@ -104,11 +102,9 @@ RSpec.describe 'ShoppingList API', type: :request do
       it 'returns one record' do
         expect(json.size).to eq shopping_list_size
       end 
-
-    end
+    end # end context
 
     context 'when recipe record does not exist' do
-
       before { auth_get user_1, "/shopping_lists/#{-3}", params: {} }
 
       it 'returns status code 404' do
@@ -118,24 +114,21 @@ RSpec.describe 'ShoppingList API', type: :request do
       it 'returns not found message' do
         expect(response.body).to match /Couldn't find ShoppingList/
       end 
-
-    end 
+    end # end context
       
     context 'when user retrieves shopping list not belonging to them' do 
-
       before { auth_get user_2, "/shopping_lists/#{user_1_shopping_list.id}", params: {} }
 
       it 'returns status code unauthorized' do
         expect(response).to have_http_status(401)
       end 
-
-    end
+    end # end context
       
   end # end describe block
 
-  #
+  ##########################
   # spec for POST /users/:id/shopping_lists
-  #
+  ##########################
 
   describe 'POST /users/:id/shopping_lists' do
       
@@ -195,7 +188,13 @@ RSpec.describe 'ShoppingList API', type: :request do
         end 
       end 
 
-    end
+      it 'returns all newly-created items as not purchased' do
+        ingredient_shopping_lists = json['ingredient_shopping_lists']
+        ingredient_shopping_lists.each do |ing_sl|
+          expect(ing_sl["purchased"]).to eq false
+        end
+      end
+    end # end context
 
     context 'when request attributes are invalid' do
       before { auth_post user_1, "/users/#{user_1.id}/shopping_lists", params: {} }
@@ -203,7 +202,7 @@ RSpec.describe 'ShoppingList API', type: :request do
       it 'returns status code 400' do
         expect(response).to have_http_status 400
       end
-    end
+    end # end context
 
     context 'when user is not authorized to POST' do
       before { auth_post user_1, "/users/#{user_2.id}/shopping_lists", params: {} }
@@ -211,85 +210,139 @@ RSpec.describe 'ShoppingList API', type: :request do
       it 'returns unauthorized' do
         expect(response).to have_http_status 401
       end
-    end 
+    end # end context
  
   end # end describe block
-=begin
-  #
-  # spec for PUT /meal_plans
-  #
 
-  describe "PUT /meal_plans/:id" do
+  ##########################
+  # spec for PUT /shopping/lists/:id
+  ##########################
 
-    let(:valid_attrs) { { :meal_plan => { name: 'my revised meal plan' } } }
-    before { auth_put user_1, "/meal_plans/#{user_1_first_mp_id}", params: valid_attrs }
+  describe "PUT /shopping_lists/:id" do
 
-    context 'when meal plan exists' do
+    #
+    # TEST SETUP
+    #
+
+    let(:unique_ingredients) { 3 }
+
+    # create known recipes to test aggregation for shopping list
+    let!(:cups) { create(:measure, name: "cups") }
+    let!(:dairy) { create(:ingredient_category, name: "dairy") }
+    
+    let!(:milk) { create(:ingredient, name: "milk", ingredient_category_id: dairy.id) }
+    let!(:cheese) { create(:ingredient, name: "cheese", ingredient_category_id: dairy.id) }
+    let!(:yogurt) { create(:ingredient, name: "yogurt", ingredient_category_id: dairy.id) }
+
+    let!(:recipe_1_ing_hash) { { milk.id => [cups.id, 1.5], cheese.id => [cups.id, 0.5] } }
+    let!(:recipe_2_ing_hash) { { milk.id => [cups.id, 0.5], cheese.id => [cups.id, 1.5], yogurt.id => [cups.id, 2.0] } }
+
+    # create known recipes
+    let!(:user_1_recipe_1) { create_full_recipe(user_1, recipe_1_ing_hash) }
+    let!(:user_1_recipe_2) { create_full_recipe(user_1, recipe_2_ing_hash) }
+    let!(:user_1_recipes) { [user_1_recipe_1, user_1_recipe_2] }
+  
+    # create, assign a meal plan + shoppinglist to user one
+    let!(:user_1_meal_plan) { create_meal_plan(user_1, user_1_recipes) }
+    let!(:user_1_shopping_list) { create_shopping_list( user_1, "my shopping list",  user_1_meal_plan) }
+   
+    # create randomized shopping list for user 2
+    let!(:user_2_shopping_list) { create_shopping_list( user_2, "user 2 shopping list", user_2_first_mp ) }
+    let!(:prevname) { user_2_shopping_list.name }
+
+    # create JSON for testing
+    let(:valid_attrs) { 
+                        { 
+                          shopping_list:  { 
+                                            name: 'my revised shopping list',
+                                            ingredient_shopping_lists_attributes: [ { ingredient_id: "#{milk.id}", measure_id: "#{cups.id}", amount: '2.0', purchased: true } ]
+                                          }
+                        } 
+                      }
+
+    context 'when shopping list exists' do
+      before { auth_put user_1, "/shopping_lists/#{user_1_shopping_list.id}", params: valid_attrs }
+     
       it 'returns status code 204' do
         expect(response).to have_http_status 204
       end
 
-      it 'updates the meal plan' do
-        updated_meal_plan = MealPlan.find(user_1_first_mp_id)
-        expect(updated_meal_plan.name).to match /my revised meal plan/
+      it 'updates the shopping list' do
+        updated_shopping_list = ShoppingList.find(user_1_shopping_list.id)
+        expect(updated_shopping_list.name).to match /my revised shopping list/
+      end
+
+      it 'can update purchased field' do
+        milk_purchased_check = IngredientShoppingList.find_by(shopping_list: user_1_shopping_list, ingredient: milk)
+        expect(milk_purchased_check.purchased).to eq true
+      end 
+
+      it 'does not updated other purchased fields' do
+        cheese_purchased_check = IngredientShoppingList.find_by(shopping_list: user_1_shopping_list, ingredient: cheese)
+        expect(cheese_purchased_check.purchased).to eq false
+      end
+
+      it 'allows for one ingredient to be modified at a time' do
+        updated_shopping_list = ShoppingList.find(user_1_shopping_list.id)
+        expect(updated_shopping_list.ingredient_shopping_lists.size()).to eq unique_ingredients
       end
     end # end context
 
-    context 'when meal plan does not exist' do
+    context 'when shopping list does not exist' do
+      before { auth_put user_1, "/shopping_lists/-1", params: valid_attrs }
 
-      let(:user_1_first_mp_id) { -1 }
       it 'returns status code 404' do
         expect(response).to have_http_status 404
       end
 
       it 'returns a not found message' do
-        expect(response.body).to match /Couldn't find MealPlan/
+        expect(response.body).to match /Couldn't find ShoppingList/
       end
-
     end # end context
 
     context 'when user not authorized to PUT' do
-      before { auth_put user_1, "/meal_plans/#{user_2.meal_plans.first.id}", params: valid_attrs }
-      let!(:prevname) { user_2_first_mp_name }
+      before { auth_put user_1, "/shopping_lists/#{user_2_shopping_list.id}", params: valid_attrs }
 
       it 'returns unauthorized' do
         expect(response).to have_http_status 401
       end
 
       it 'has not modified the name' do
-        expect(user_2.meal_plans.first.name).to eq prevname
+        expect(user_2_shopping_list.name).to eq prevname
       end
-
-    end # end ontext 
+    end # end context 
 
   end # end describe block
 
-  #
-  # spec for DELETE /recipes
-  #
+  ##########################
+  # spec for DELETE /shopping_lists/:id
+  ##########################
 
-  describe 'DELETE /meal_plans/:id' do
+  describe 'DELETE /shopping_lists/:id' do
+
+    let!(:user_1_shopping_list) { create_shopping_list( user_1, "user 1 shopping list", user_1_first_mp ) }
+    let!(:user_2_shopping_list) { create_shopping_list( user_2, "user 2 shopping list", user_2_first_mp ) }
 
     context 'when authorized user attempts to delete' do
-
-      before { auth_delete user_1, "/meal_plans/#{user_1_first_mp_id}", params: {} }
+      before { auth_delete user_1, "/shopping_lists/#{user_1_shopping_list.id}", params: {} }
   
       it 'returns status code 204' do
         expect(response).to have_http_status 204
       end
 
-    end
+      it 'deletes associated ingredient_shopping_lists entries' do
+        expect(IngredientShoppingList.find_by(shopping_list_id: user_1_shopping_list.id)).to be nil
+      end
+    end # end context
 
-    context 'when unauthorized user attempts to delete' do
-      
-      before { auth_delete user_1, "/meal_plans/#{user_2_first_mp_id}", params: {} }
+    context 'when unauthorized user attempts to delete' do   
+      before { auth_delete user_1, "/shopping_lists/#{user_2_shopping_list.id}", params: {} }
 
       it 'returns unauthorized' do
         expect(response).to have_http_status 401
       end 
-
-    end
+    end # end context
 
   end # end describe block
-=end
+
 end # end test

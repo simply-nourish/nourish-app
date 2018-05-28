@@ -121,7 +121,6 @@ module RequestSpecHelper
         ingredient_recipes = @recipe.ingredient_recipes
         ingredient_recipes.each do |ing_rec|
 
-#         puts "One ingredient-recipe entry: #{ing_rec.ingredient_id}--#{ing_rec.measure_id}--#{ing_rec.amount}"
           # the key for each entry in our map will be the combination of (ingredient_id, measure_id) 
           ing_measure = [ing_rec.ingredient_id, ing_rec.measure_id]
 
@@ -139,11 +138,12 @@ module RequestSpecHelper
 
     # now, create ingredient_shopping_lists with aggregated data
     ing_amt_map.each do |key, agg_amount|
-      create(:ingredient_shopping_list, shopping_list_id: shopping_list.id, ingredient_id: key.first, measure_id: key.second, amount: agg_amount)
+      create(:ingredient_shopping_list, shopping_list_id: shopping_list.id, ingredient_id: key.first, measure_id: key.second, \
+              amount: agg_amount, purchased: false)
     end 
 
     return shopping_list
 
-  end 
+  end
 
 end

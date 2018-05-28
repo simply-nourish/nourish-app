@@ -153,7 +153,7 @@ RSpec.describe 'MealPlans API', type: :request do
   end # end describe block
 
   #
-  # spec for PUT /meal_plans
+  # spec for PUT /meal_plans/:id
   #
 
   describe "PUT /meal_plans/:id" do
@@ -202,7 +202,7 @@ RSpec.describe 'MealPlans API', type: :request do
   end # end describe block
 
   #
-  # spec for DELETE /recipes
+  # spec for DELETE /meal_plans/:id
   #
 
   describe 'DELETE /meal_plans/:id' do

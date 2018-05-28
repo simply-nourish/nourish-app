@@ -189,7 +189,7 @@ RSpec.describe 'Recipes API', type: :request do
         expect(response).to have_http_status 204
       end
 
-      it 'updates the recipe' do
+      it 'updates the recipe's title do
         updated_recipe = Recipe.find(user_1_first_rec_id)
         expect(updated_recipe.title).to match /croque monsieur/
       end

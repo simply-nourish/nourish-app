@@ -4,6 +4,7 @@ class CreateIngredientShoppingLists < ActiveRecord::Migration[5.1]
       t.references :ingredient, foreign_key: true
       t.references :shopping_list, foreign_key: true
       t.float :amount, :null => false
+      t.boolean :purchased, :null => false, :default => false
       t.references :measure, foreign_key: true
 
       t.timestamps
@@ -14,3 +15,4 @@ class CreateIngredientShoppingLists < ActiveRecord::Migration[5.1]
   
   end
 end
+ 

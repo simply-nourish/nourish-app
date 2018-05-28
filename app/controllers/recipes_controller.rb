@@ -20,7 +20,6 @@ class RecipesController < ApplicationController
 
   # GET /recipes/:id
   def show
-    set_recipe()
     render json: @recipe, status: :ok
   end
 
@@ -41,7 +40,6 @@ class RecipesController < ApplicationController
 
   # PUT /recipes/:id
   def update
-    set_recipe()
     if @recipe.user == current_user
       @recipe.update(recipe_params)
       head :no_content    
@@ -52,7 +50,6 @@ class RecipesController < ApplicationController
 
   # DELETE /recipes/:id
   def destroy
-    set_recipe()
     if @recipe.user == current_user
       @recipe.destroy
       head :no_content
@@ -80,7 +77,9 @@ class RecipesController < ApplicationController
 
     # define acceptable params for post, patch
     def recipe_params
-      params.require(:recipe).permit(:title, :summary, :instructions, dietary_restriction_recipes_attributes:[:dietary_restriction_id], ingredient_recipes_attributes:[:ingredient_id, :measure_id, :amount] )
+      params.require(:recipe).permit(:title, :summary, :instructions, 
+                                     dietary_restriction_recipes_attributes: [:id, :dietary_restriction_id], 
+                                     ingredient_recipes_attributes: [:id, :ingredient_id, :measure_id, :amount] )
     end
 
     def set_user

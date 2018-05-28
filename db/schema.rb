@@ -49,6 +49,7 @@ ActiveRecord::Schema.define(version: 20180526160934) do
     t.bigint "ingredient_id"
     t.bigint "shopping_list_id"
     t.float "amount", limit: 24, null: false
+    t.boolean "purchased"
     t.bigint "measure_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -112,7 +113,7 @@ ActiveRecord::Schema.define(version: 20180526160934) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["meal_plan_id"], name: "index_shopping_lists_on_meal_plan_id"
-    t.index ["name", "user_id"], name: "index_shopping_lists_on_name_and_user_id", unique: true
+    t.index ["name", "user_id", "meal_plan_id"], name: "index_shopping_lists_on_name_and_user_id_and_meal_plan_id", unique: true
     t.index ["user_id"], name: "index_shopping_lists_on_user_id"
   end
 
