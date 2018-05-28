@@ -181,22 +181,61 @@ RSpec.describe 'Recipes API', type: :request do
 
   describe "PUT /recipes" do
 
-    let(:valid_attrs) { { recipe: { title: 'croque monsieur' } } }
+    # creating some test data...building known good data 
 
-    before { auth_put user_1, "/recipes/#{user_1_first_rec_id}", params: valid_attrs }
+    # create known recipes to test aggregation for shopping list
+    let!(:cups) { create(:measure, name: "cups") }
+    let!(:teaspoons) { create(:measure, name: "teaspoons") }
+    let!(:dairy) { create(:ingredient_category, name: "dairy") }
+    
+    let!(:milk) { create(:ingredient, name: "milk", ingredient_category_id: dairy.id) }
+    let!(:cheese) { create(:ingredient, name: "cheese", ingredient_category_id: dairy.id) }
+    
+    let!(:recipe_1_ing_hash) { { milk.id => [cups.id, 1.5], cheese.id => [cups.id, 0.5] } }
+    
+    # create known recipes
+    let!(:user_1_recipe) { create_full_recipe(user_1, recipe_1_ing_hash) }
+
+    # set new attributes
+    let(:valid_attrs) { 
+                        { 
+                          recipe: { title: 'croque monsieur', 
+                                    ingredient_recipes_attributes: [ {ingredient_id: "#{milk.id}", measure_id: "#{teaspoons.id}", amount: "2.0"},
+                                                                     {ingredient_id: "#{cheese.id}", measure_id: "#{cups.id}", _destroy: '1' } ] 
+                                  } 
+                        } 
+                      }
 
     context 'when recipe exists' do
+      before { auth_put user_1, "/recipes/#{user_1_recipe.id}", params: valid_attrs }
       it 'returns status code 204' do
         expect(response).to have_http_status 204
       end
 
-      it 'updates the recipe' do
-        updated_recipe = Recipe.find(user_1_first_rec_id)
+      it 'updates the recipe\'s title' do
+        updated_recipe = Recipe.find(user_1_recipe.id)
         expect(updated_recipe.title).to match /croque monsieur/
       end
+
+      it 'updates the ingredient amount' do
+        updated_ingredient_recipe = IngredientRecipe.find_by(recipe: user_1_recipe, ingredient: milk )
+        expect(updated_ingredient_recipe.amount).to eq 2.0
+      end
+
+      it 'updates the unit of measure' do
+        updated_ingredient_recipe = IngredientRecipe.find_by(recipe: user_1_recipe, ingredient: milk )
+        expect(updated_ingredient_recipe.measure_id).to eq teaspoons.id
+      end
+
+      it 'destroys the appropriate ingredient_recipe' do
+        destroyed_ingredient_recipe = IngredientRecipe.find_by(recipe: user_1_recipe, ingredient: cheese)
+        expect(destroyed_ingredient_recipe).to eq nil
+      end
+
     end # end context
 
     context 'when recipe does not exist' do
+      before { auth_put user_1, "/recipes/-1", params: valid_attrs }
 
       let(:user_1_first_rec_id) { -1 }
       it 'returns status code 404' do

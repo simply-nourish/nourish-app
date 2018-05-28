@@ -91,18 +91,22 @@ class ShoppingListsController < ApplicationController
   end 
 
   def update
-    
+
     if @shopping_list.user == current_user
-      @shopping_list.update(:name => shopping_list_update_params[:name])
+    
+      @shopping_list.update({:name => shopping_list_update_params[:name]}.reject{|k,v| v.blank?} )
       @ingredient_shopping_lists = @shopping_list.ingredient_shopping_lists
       
       # update each nested ingredient_shopping_list entry manually
-      shopping_list_update_params[:ingredient_shopping_lists_attributes].each do |ing_sl|
-        @ingredient_shopping_list = IngredientShoppingList.find_by( ingredient_id: ing_sl[:ingredient_id], measure_id: ing_sl[:measure_id] ) 
-        @ingredient_shopping_list.update!(:amount => ing_sl[:amount], :purchased => ing_sl[:purchased])
+      if( shopping_list_update_params[:ingredient_shopping_lists_attributes] )
+        shopping_list_update_params[:ingredient_shopping_lists_attributes].each do |ing_sl|
+          @ingredient_shopping_list = @shopping_list.ingredient_shopping_lists.find_by( ingredient_id: ing_sl[:ingredient_id], measure_id: ing_sl[:measure_id] ) 
+          @ingredient_shopping_list.update!({:amount => ing_sl[:amount], :purchased => ing_sl[:purchased]}.reject{|k,v| v.blank?})
+        end
       end
 
       head :no_content    
+  
     else
       render status: :unauthorized
     end  

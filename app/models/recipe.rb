@@ -8,13 +8,13 @@ class Recipe < ApplicationRecord
   has_many :ingredients, :through => :ingredient_recipes
   
   # allow Recipe model to create ingredient_recipes
-  accepts_nested_attributes_for :ingredient_recipes
+  accepts_nested_attributes_for :ingredient_recipes, allow_destroy: true
 
   # allow Recipe model to create dietary_restrictions_recipes
   has_many :dietary_restriction_recipes, dependent: :destroy
 
   # allow Recipe model to create dietary_restrictions_recipes
-  accepts_nested_attributes_for :dietary_restriction_recipes
+  accepts_nested_attributes_for :dietary_restriction_recipes, allow_destroy: true
 
   # user can't create multiple recipes with identical titles
   validates_uniqueness_of :user_id, :scope => :title

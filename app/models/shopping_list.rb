@@ -16,7 +16,7 @@ class ShoppingList < ApplicationRecord
   has_many :ingredient_shopping_lists, dependent: :destroy
 
   # allow ShoppingList model to update ingredient_shopping_lists
-  accepts_nested_attributes_for :ingredient_shopping_lists, allow_destroy: true, update_only: true
+  accepts_nested_attributes_for :ingredient_shopping_lists, allow_destroy: true
 
   # same user can't create two identically-named shopping lists
   validates_uniqueness_of :user_id, :scope => :name

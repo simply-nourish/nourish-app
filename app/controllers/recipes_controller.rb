@@ -40,12 +40,47 @@ class RecipesController < ApplicationController
 
   # PUT /recipes/:id
   def update
+
     if @recipe.user == current_user
-      @recipe.update(recipe_params)
+      @recipe.update!( {:title => recipe_params[:title], 
+                        :summary => recipe_params[:summary], 
+                        :instructions => recipe_params[:instructions]}.reject{|k,v| v.blank?} )
+
+      @ingredient_recipes = @recipe.ingredient_recipes
+      
+      # update each nested ingredient_shopping_list entry manually
+      if( recipe_params[:ingredient_recipes_attributes])
+  
+        recipe_params[:ingredient_recipes_attributes].each do |ing_rec|
+          @ingredient_recipe = @recipe.ingredient_recipes.find_by( ingredient_id: ing_rec[:ingredient_id] ) 
+          if ing_rec[:_destroy] == '1'
+            @ingredient_recipe.destroy()
+          else
+            @ingredient_recipe.update!( {:amount => ing_rec[:amount], :measure_id => ing_rec[:measure_id]}.reject{|k,v| v.blank?} )        
+          end
+        end
+  
+      end
+
+      if( recipe_params[:dietary_restriction_recipes_attributes] )
+   
+        recipe_params[:dietary_restriction_recipes_attributes].each do |diet_rec| 
+          @dietary_restriction_recipe = recipe.dietary_restriction_recipes.find_by( dietary_restriction_id: diet_rec[:dietary_restriction_id] )
+          if diet_rec[:_destroy] == '1'
+            @dietary_restriction_recipe.destroy()
+          else
+            @dietary_restriction_recipe.update!( {:dietary_restriction_id => diet_rec[:dietary_restriction_id]}.reject{|k,v| v.blank?} )        
+          end
+        end
+   
+      end
+
       head :no_content    
+    
     else
       render status: :unauthorized
-    end 
+    end  
+
   end
 
   # DELETE /recipes/:id
@@ -79,7 +114,7 @@ class RecipesController < ApplicationController
     def recipe_params
       params.require(:recipe).permit(:title, :summary, :instructions, 
                                      dietary_restriction_recipes_attributes: [:id, :dietary_restriction_id], 
-                                     ingredient_recipes_attributes: [:id, :ingredient_id, :measure_id, :amount] )
+                                     ingredient_recipes_attributes: [:id, :ingredient_id, :measure_id, :amount, :_destroy] )
     end
 
     def set_user
@@ -91,5 +126,3 @@ class RecipesController < ApplicationController
     end
 
 end
-
-

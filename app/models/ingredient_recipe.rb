@@ -5,6 +5,6 @@ class IngredientRecipe < ApplicationRecord
   validates_presence_of :amount
 
   # combination of recipe, ingredient, measure must be unique
-  validates_uniqueness_of :recipe_id, :scope => [:ingredient_id, :measure_id]
+  validates_uniqueness_of :recipe_id, :scope => [:ingredient_id]
   
 end
