@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180520200239) do
+ActiveRecord::Schema.define(version: 20180527202228) do
 
   create_table "dietary_restriction_recipes", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
     t.bigint "dietary_restriction_id"
@@ -41,8 +41,22 @@ ActiveRecord::Schema.define(version: 20180520200239) do
     t.datetime "updated_at", null: false
     t.index ["ingredient_id"], name: "index_ingredient_recipes_on_ingredient_id"
     t.index ["measure_id"], name: "index_ingredient_recipes_on_measure_id"
-    t.index ["recipe_id", "ingredient_id", "measure_id"], name: "ingredient_recipes_index", unique: true
+    t.index ["recipe_id", "ingredient_id"], name: "ingredient_recipes_index", unique: true
     t.index ["recipe_id"], name: "index_ingredient_recipes_on_recipe_id"
+  end
+
+  create_table "ingredient_shopping_lists", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
+    t.bigint "ingredient_id"
+    t.bigint "shopping_list_id"
+    t.float "amount", limit: 24, null: false
+    t.boolean "purchased", default: false, null: false
+    t.bigint "measure_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["ingredient_id", "shopping_list_id", "measure_id"], name: "ingredient_shopping_lists_index", unique: true
+    t.index ["ingredient_id"], name: "index_ingredient_shopping_lists_on_ingredient_id"
+    t.index ["measure_id"], name: "index_ingredient_shopping_lists_on_measure_id"
+    t.index ["shopping_list_id"], name: "index_ingredient_shopping_lists_on_shopping_list_id"
   end
 
   create_table "ingredients", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
@@ -95,9 +109,11 @@ ActiveRecord::Schema.define(version: 20180520200239) do
   create_table "shopping_lists", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
     t.string "name", null: false
     t.bigint "user_id"
+    t.bigint "meal_plan_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["name", "user_id"], name: "index_shopping_lists_on_name_and_user_id", unique: true
+    t.index ["meal_plan_id"], name: "index_shopping_lists_on_meal_plan_id"
+    t.index ["name", "user_id", "meal_plan_id"], name: "index_shopping_lists_on_name_and_user_id_and_meal_plan_id", unique: true
     t.index ["user_id"], name: "index_shopping_lists_on_user_id"
   end
 
@@ -135,10 +151,14 @@ ActiveRecord::Schema.define(version: 20180520200239) do
   add_foreign_key "ingredient_recipes", "ingredients"
   add_foreign_key "ingredient_recipes", "measures"
   add_foreign_key "ingredient_recipes", "recipes"
+  add_foreign_key "ingredient_shopping_lists", "ingredients"
+  add_foreign_key "ingredient_shopping_lists", "measures"
+  add_foreign_key "ingredient_shopping_lists", "shopping_lists"
   add_foreign_key "ingredients", "ingredient_categories"
   add_foreign_key "meal_plan_recipes", "meal_plans"
   add_foreign_key "meal_plan_recipes", "recipes"
   add_foreign_key "meal_plans", "users"
   add_foreign_key "recipes", "users"
+  add_foreign_key "shopping_lists", "meal_plans"
   add_foreign_key "shopping_lists", "users"
 end

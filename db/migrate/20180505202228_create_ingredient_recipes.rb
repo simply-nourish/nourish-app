@@ -8,7 +8,7 @@ class CreateIngredientRecipes < ActiveRecord::Migration[5.1]
       t.timestamps
     end
 
-    add_index :ingredient_recipes, [:recipe_id, :ingredient_id, :measure_id], \
+    add_index :ingredient_recipes, [:recipe_id, :ingredient_id], \
               unique: true, :name => 'ingredient_recipes_index'
   
   end

@@ -16,4 +16,12 @@ RSpec.describe Ingredient, type: :model do
   # must belong to one category
   it { is_expected.to belong_to :ingredient_category }
 
+  # association with recipes
+  it { is_expected.to have_many(:ingredient_recipes).dependent(:nullify) }
+  it { is_expected.to have_many(:recipes).through(:ingredient_recipes) }
+
+  # association with shopping lists
+  it { is_expected.to have_many(:ingredient_shopping_lists).dependent(:destroy) }
+  it { is_expected.to have_many(:shopping_lists).through(:ingredient_shopping_lists) }
+
 end

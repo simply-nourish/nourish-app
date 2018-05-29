@@ -13,6 +13,7 @@ RSpec.describe User, type: :model do
   # association tests
   it { is_expected.to have_many(:recipes).dependent(:destroy) }
   it { is_expected.to have_many(:meal_plans).dependent(:destroy) }
+  it { is_expected.to have_many(:shopping_lists).dependent(:destroy) }
   
   describe 'uniqueness validations' do 
     subject { create(:user) }

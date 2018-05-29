@@ -24,7 +24,7 @@ RSpec.describe IngredientRecipe, type: :model do
     subject { IngredientRecipe.new(recipe: test_recipe, ingredient: test_ingredient, 
                                    amount: 1, measure: test_measure) }
  
-    it { is_expected.to validate_uniqueness_of(:recipe_id).scoped_to(:ingredient_id, :measure_id) }
+    it { is_expected.to validate_uniqueness_of(:recipe_id).scoped_to(:ingredient_id) }
   end
 
 end

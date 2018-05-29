@@ -17,6 +17,9 @@ class User < ActiveRecord::Base
   # if a user is deleted, also delete associated meal_plans
   has_many :meal_plans, dependent: :destroy
 
+  # express relationship between users and shopping lists
+  has_many :shopping_lists, dependent: :destroy
+
   # user nicknames must be unique
   validates_uniqueness_of :nickname
 

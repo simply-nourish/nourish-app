@@ -19,14 +19,13 @@ RSpec.describe 'MealPlans API', type: :request do
 
   let!(:user_2) { create(:user) }
 
-  let!(:user_1_meal_plan) { create_meal_plan_list(user_1, meal_plans_per_user, recipes_per_meal_plan) }
-  let!(:user_2_meal_plan) { create_meal_plan_list(user_2, meal_plans_per_user, recipes_per_meal_plan) }
+  let!(:user_1_meal_plans) { create_meal_plan_list(user_1, meal_plans_per_user, recipes_per_meal_plan) }
+  let!(:user_2_meal_plans) { create_meal_plan_list(user_2, meal_plans_per_user, recipes_per_meal_plan) }
 
-  let!(:user_1_first_mp_id) { user_1_meal_plan.first.id }
+  let!(:user_1_first_mp) { user_1_meal_plans.first }
   let!(:uid1) { user_1.id }
 
-  let!(:user_2_first_mp_name) { user_2_meal_plan.first.name }
-  let!(:user_2_first_mp_id) { user_2_meal_plan.first.id}
+  let!(:user_2_first_mp) { user_2_meal_plans.first}
   
   #
   # spec for GET /users/:id/meal_plans
@@ -69,23 +68,22 @@ RSpec.describe 'MealPlans API', type: :request do
   #
 
   describe "GET users/:id/meal_plans/:id" do
-    before { auth_get user_1, "/meal_plans/#{user_1_first_mp_id}", params: {} }
 
-    context 'when recipe exists' do
+    context 'when meal plan exists' do
+      before { auth_get user_1, "/meal_plans/#{user_1_first_mp.id}", params: {} }
 
       it 'returns status code 200' do
         expect(response).to have_http_status(200)
       end
       
       it 'returns the recipe' do
-        expect(json['id']).to eq user_1_first_mp_id
+        expect(json['id']).to eq user_1_first_mp.id
       end
 
     end
 
-    context 'when recipe record does not exist' do
- 
-      let(:user_1_first_mp_id) { -1 }
+    context 'when meal plan record does not exist' do
+      before { auth_get user_1, "/meal_plans/-1", params: {} }
      
       it 'returns status code 404' do
         expect(response).to have_http_status 404
@@ -96,7 +94,7 @@ RSpec.describe 'MealPlans API', type: :request do
       end 
       
     context 'when user retrieves meal plan not belonging to them' do 
-      let(:user_1_first_mp_id) { user_2_first_mp_id }
+      before { auth_get user_1, "/meal_plans/#{user_2_first_mp.id}", params: {} }
 
       it 'returns status code unauthorized' do
         expect(response).to have_http_status(401)
@@ -153,28 +151,61 @@ RSpec.describe 'MealPlans API', type: :request do
   end # end describe block
 
   #
-  # spec for PUT /meal_plans
+  # spec for PUT /meal_plans/:id
   #
 
   describe "PUT /meal_plans/:id" do
 
-    let(:valid_attrs) { { :meal_plan => { name: 'my revised meal plan' } } }
-    before { auth_put user_1, "/meal_plans/#{user_1_first_mp_id}", params: valid_attrs }
+    # creating some test data...building known good data 
+
+    # create known recipes to test aggregation for shopping list
+    let!(:cups) { create(:measure, name: "cups") }
+    let!(:dairy) { create(:ingredient_category, name: "dairy") }
+    
+    let!(:milk) { create(:ingredient, name: "milk", ingredient_category_id: dairy.id) }
+    let!(:cheese) { create(:ingredient, name: "cheese", ingredient_category_id: dairy.id) }
+    let!(:yogurt) { create(:ingredient, name: "yogurt", ingredient_category_id: dairy.id) }
+
+    let!(:recipe_1_ing_hash) { { milk.id => [cups.id, 1.5], cheese.id => [cups.id, 0.5] } }    
+    let!(:recipe_2_ing_hash) { { milk.id => [cups.id, 1.5], yogurt.id => [cups.id, 0.5] } }
+
+    # create known recipes
+    let!(:user_1_recipe_1) { create_full_recipe(user_1, recipe_1_ing_hash) }
+    let!(:user_1_recipe_2) { create_full_recipe(user_1, recipe_2_ing_hash) }
+    let!(:user_1_recipes) { [user_1_recipe_1, user_1_recipe_2] }
+
+    # create known meal_plans
+    let!(:user_1_meal_plan) { create_meal_plan(user_1, user_1_recipes) }
+    let!(:meal_plan_entry_1) { user_1_meal_plan.meal_plan_recipes.first }
+    let!(:meal_plan_entry_2) { user_1_meal_plan.meal_plan_recipes.second }
+
+    let(:valid_attrs) { { meal_plan: { 
+                                        name: 'my revised meal plan', 
+                                        meal_plan_recipes_attributes: [ {recipe_id: "#{user_1_recipe_1.id}", day: meal_plan_entry_1.day, meal: meal_plan_entry_1.meal, _destroy: "1" } ] 
+                                      } } }
 
     context 'when meal plan exists' do
+      before { auth_put user_1, "/meal_plans/#{user_1_meal_plan.id}", params: valid_attrs }
+
       it 'returns status code 204' do
         expect(response).to have_http_status 204
       end
 
-      it 'updates the meal plan' do
-        updated_meal_plan = MealPlan.find(user_1_first_mp_id)
+      it 'updates the meal plan\'s name' do
+        updated_meal_plan = MealPlan.find(user_1_meal_plan.id)
         expect(updated_meal_plan.name).to match /my revised meal plan/
       end
+
+      it 'destroys the appropriate meal plan entry' do
+        destroyed_meal_plan_recipe = MealPlanRecipe.find_by(recipe: user_1_recipe_1)
+        expect(destroyed_meal_plan_recipe).to eq nil
+      end
+
     end # end context
 
     context 'when meal plan does not exist' do
+      before { auth_put user_1, "/meal_plans/-1", params: valid_attrs }
 
-      let(:user_1_first_mp_id) { -1 }
       it 'returns status code 404' do
         expect(response).to have_http_status 404
       end
@@ -182,49 +213,43 @@ RSpec.describe 'MealPlans API', type: :request do
       it 'returns a not found message' do
         expect(response.body).to match /Couldn't find MealPlan/
       end
-
     end # end context
 
     context 'when user not authorized to PUT' do
-      before { auth_put user_1, "/meal_plans/#{user_2.meal_plans.first.id}", params: valid_attrs }
-      let!(:prevname) { user_2_first_mp_name }
+      before { auth_put user_1, "/meal_plans/#{user_2_first_mp.id}", params: valid_attrs }
+      let!(:prevname) { user_2_first_mp.name }
 
       it 'returns unauthorized' do
         expect(response).to have_http_status 401
       end
 
       it 'has not modified the name' do
-        expect(user_2.meal_plans.first.name).to eq prevname
+        expect(user_2_first_mp.name).to eq prevname
       end
-
-    end # end ontext 
+    end # end context 
 
   end # end describe block
 
   #
-  # spec for DELETE /recipes
+  # spec for DELETE /meal_plans/:id
   #
 
   describe 'DELETE /meal_plans/:id' do
 
     context 'when authorized user attempts to delete' do
-
-      before { auth_delete user_1, "/meal_plans/#{user_1_first_mp_id}", params: {} }
+      before { auth_delete user_1, "/meal_plans/#{user_1_first_mp.id}", params: {} }
   
       it 'returns status code 204' do
         expect(response).to have_http_status 204
       end
-
     end
 
-    context 'when unauthorized user attempts to delete' do
-      
-      before { auth_delete user_1, "/meal_plans/#{user_2_first_mp_id}", params: {} }
+    context 'when unauthorized user attempts to delete' do    
+      before { auth_delete user_1, "/meal_plans/#{user_2_first_mp.id}", params: {} }
 
       it 'returns unauthorized' do
         expect(response).to have_http_status 401
       end 
-
     end
 
   end # end describe block

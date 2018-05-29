@@ -26,6 +26,7 @@ Rails.application.routes.draw do
   resources :users, only: [:index, :show] do
     resources :recipes, only: [:index, :create]
     resources :meal_plans, only: [:index, :create]
+    resources :shopping_lists, only: [:index, :create]
   end
   
   # allow GET /recipes as well
@@ -37,6 +38,9 @@ Rails.application.routes.draw do
 
   # allow PUT / DELETE meal_plans
   resources :meal_plans, only: [:show, :update, :destroy]
+
+  # allow PUT / DELETE shopping_lists
+  resources :shopping_lists, only: [:show, :update, :destroy]
 
   # add recipes/search route
   resources :recipes do 
