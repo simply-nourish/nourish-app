@@ -90,12 +90,15 @@ class ShoppingListsController < ApplicationController
 
   end 
 
+  #
+  # PUT /shopping_lists/:id
+  # 
+
   def update
 
     if @shopping_list.user == current_user
     
       @shopping_list.update({:name => shopping_list_update_params[:name]}.reject{|k,v| v.blank?} )
-      @ingredient_shopping_lists = @shopping_list.ingredient_shopping_lists
       
       # update each nested ingredient_shopping_list entry manually
       if( shopping_list_update_params[:ingredient_shopping_lists_attributes] )
@@ -120,6 +123,10 @@ class ShoppingListsController < ApplicationController
     end  
 
   end
+
+  #
+  # DELETE /shopping_lists/:id
+  # 
 
   def destroy
     if @shopping_list.user == current_user

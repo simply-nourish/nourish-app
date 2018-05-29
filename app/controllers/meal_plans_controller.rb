@@ -41,12 +41,29 @@ class MealPlansController < ApplicationController
 
   # PUT /meal_plans/:id
   def update
+
     if @meal_plan.user == current_user
-      @meal_plan.update(meal_plan_params)
-      head :no_content    
-    else
+      @meal_plan.update!( {:name => meal_plan_params[:name]}.reject{|k,v| v.blank?} )
+      
+      # update each nested ingredient_shopping_list entry manually
+      if( meal_plan_params[:meal_plan_recipes_attributes] )
+  
+        meal_plan_params[:meal_plan_recipes_attributes].each do |mp_rec|      
+          @meal_plan_recipe = @meal_plan.meal_plan_recipes.find_by( recipe_id: mp_rec[:recipe_id], day: mp_rec[:day], meal: mp_rec[:meal] ) 
+       
+          if @meal_plan_recipe && mp_rec[:_destroy] == '1'
+              @meal_plan_recipe.destroy()
+          end
+        end
+  
+      end
+
+      head :no_content
+
+    else 
       render status: :unauthorized
-    end 
+    end
+
   end 
 
   # DELETE /meal_plans/:id
@@ -63,7 +80,7 @@ class MealPlansController < ApplicationController
 
     # define acceptable params for post, patch
     def meal_plan_params
-      params.require(:meal_plan).permit(:name, meal_plan_recipes_attributes:[:recipe_id, :day, :meal] )
+      params.require(:meal_plan).permit(:name, meal_plan_recipes_attributes:[:recipe_id, :day, :meal, :_destroy] )
     end
 
     def set_user

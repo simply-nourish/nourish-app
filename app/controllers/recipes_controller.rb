@@ -45,14 +45,11 @@ class RecipesController < ApplicationController
       @recipe.update!( {:title => recipe_params[:title], 
                         :summary => recipe_params[:summary], 
                         :instructions => recipe_params[:instructions]}.reject{|k,v| v.blank?} )
-
-      @ingredient_recipes = @recipe.ingredient_recipes
       
       # update each nested ingredient_shopping_list entry manually
       if( recipe_params[:ingredient_recipes_attributes])
   
-        recipe_params[:ingredient_recipes_attributes].each do |ing_rec|
-        
+        recipe_params[:ingredient_recipes_attributes].each do |ing_rec|    
           @ingredient_recipe = @recipe.ingredient_recipes.find_by( ingredient_id: ing_rec[:ingredient_id] ) 
        
           if @ingredient_recipe   
@@ -62,15 +59,13 @@ class RecipesController < ApplicationController
               @ingredient_recipe.update!( {:amount => ing_rec[:amount], :measure_id => ing_rec[:measure_id]}.reject{|k,v| v.blank?} )        
             end 
           end
-
         end
   
       end
 
       if( recipe_params[:dietary_restriction_recipes_attributes] )
    
-        recipe_params[:dietary_restriction_recipes_attributes].each do |diet_rec| 
-        
+        recipe_params[:dietary_restriction_recipes_attributes].each do |diet_rec|       
           @dietary_restriction_recipe = recipe.dietary_restriction_recipes.find_by( dietary_restriction_id: diet_rec[:dietary_restriction_id] )
        
           if @dietary_restriction_recipe 
@@ -79,8 +74,7 @@ class RecipesController < ApplicationController
             else
               @dietary_restriction_recipe.update!( {:dietary_restriction_id => diet_rec[:dietary_restriction_id]}.reject{|k,v| v.blank?} )        
             end
-          end
-       
+          end    
         end
    
       end
