@@ -1,6 +1,6 @@
 # app/serializers/short_ingredient_serializer.rb
 # Short/abbreviated Ingredient model serializer
 
-class ShortIngredientSerializer < ActiveModel::Serializer
+class AbbrevIngredientSerializer < ActiveModel::Serializer
   attributes :id, :name
 end
