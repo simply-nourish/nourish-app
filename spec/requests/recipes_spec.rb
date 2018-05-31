@@ -143,6 +143,7 @@ RSpec.describe 'Recipes API', type: :request do
     let(:valid_attrs) { { :recipe => {
                            title: 'myrecipe', summary: 'it\'s a new one', 
                            instructions: 'do a thing', 
+                           servings: 1,
                            ingredient_recipes_attributes: [
                                 { ingredient_id: "#{iid}", measure_id: "#{mid}", amount: '3' } ] 
                            } 

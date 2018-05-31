@@ -6,6 +6,9 @@ class Recipe < ApplicationRecord
   # but do not destroy ingredients themselves
   has_many :ingredient_recipes, dependent: :destroy
   has_many :ingredients, :through => :ingredient_recipes
+
+  # validates that servings count is between 1 and 32
+  validates :servings, :inclusion => { :in => 1..32 }
   
   # allow Recipe model to create ingredient_recipes
   accepts_nested_attributes_for :ingredient_recipes, allow_destroy: true

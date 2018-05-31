@@ -35,10 +35,29 @@ salted_peanuts = Ingredient.create!(name: 'salted peanuts', ingredient_category:
 cup = Measure.create!(name: 'cup')
 lb = Measure.create!(name: 'lb')
 
-fishsticks = Recipe.create!(title: 'fishsticks', summary: 'some good fishsticks', instructions: 'put them in the oven', user: user1)
-croque_monsieur = Recipe.create!(title: 'croque monsieur', summary: 'a cheesy sandwich the whole family can enjoy', instructions: 'order it at a restaurant', user: user2)
-candied_yams = Recipe.create!(title: 'candied yams', summary: 'a family treat, great with fishsticks', instructions: 'buy a yam, then candy it', user: user2)
-pizza = Recipe.create!(title: 'pizza', summary: 'my fave-rave food', instructions: 'ditch the fishsticks, then call 1-800-NO-FSHTK', user: user2)
+fishsticks = Recipe.create!(title: 'fishsticks', 
+                            summary: 'some good fishsticks', 
+                            instructions: 'put them in the oven', 
+                            user: user1, 
+                            servings: 1)
+
+croque_monsieur = Recipe.create!(title: 'croque monsieur', 
+                                 summary: 'a cheesy sandwich the whole family can enjoy', 
+                                 instructions: 'order it at a restaurant', 
+                                 user: user2, 
+                                 servings: 2)
+
+candied_yams = Recipe.create!(title: 'candied yams',
+                              summary: 'a family treat, great with fishsticks', 
+                              instructions: 'buy a yam, then candy it', 
+                              user: user2, 
+                              servings: 3)
+
+pizza = Recipe.create!(title: 'pizza', 
+                       summary: 'my fave-rave food', 
+                       instructions: 'ditch the fishsticks, then call 1-800-NO-FSHTK', 
+                       user: user2, 
+                       servings: 4)
 
 # fishsticks
 IngredientRecipe.create!(ingredient: salt, measure: cup, recipe: fishsticks, amount: 3.5)
