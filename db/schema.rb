@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180527202228) do
+ActiveRecord::Schema.define(version: 20180531012854) do
 
   create_table "dietary_restriction_recipes", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
     t.bigint "dietary_restriction_id"
@@ -102,6 +102,7 @@ ActiveRecord::Schema.define(version: 20180527202228) do
     t.text "instructions", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "servings", null: false
     t.index ["title", "user_id"], name: "index_recipes_on_title_and_user_id", unique: true
     t.index ["user_id"], name: "index_recipes_on_user_id"
   end

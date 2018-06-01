@@ -116,7 +116,7 @@ class RecipesController < ApplicationController
 
     # define acceptable params for post, patch
     def recipe_params
-      params.require(:recipe).permit(:title, :summary, :instructions, 
+      params.require(:recipe).permit(:title, :summary, :instructions, :servings,
                                      dietary_restriction_recipes_attributes: [:id, :dietary_restriction_id], 
                                      ingredient_recipes_attributes: [:id, :ingredient_id, :measure_id, :amount, :_destroy] )
     end
