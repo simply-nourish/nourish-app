@@ -2,7 +2,7 @@
 # MealPlanRecipe model serializer
 
 class MealPlanRecipeSerializer < ActiveModel::Serializer
-  attributes :id, :day, :meal
+  attributes :day, :meal
   has_one :recipe_id
   
   def recipe_id
