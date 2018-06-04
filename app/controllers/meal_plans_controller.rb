@@ -52,8 +52,15 @@ class MealPlansController < ApplicationController
           @meal_plan_recipe = @meal_plan.meal_plan_recipes.find_by( recipe_id: mp_rec[:recipe_id], day: mp_rec[:day], meal: mp_rec[:meal] ) 
        
           if @meal_plan_recipe && mp_rec[:_destroy] == '1'
-              @meal_plan_recipe.destroy()
-          end
+            @meal_plan_recipe.destroy()
+          elsif @meal_plan_recipe
+            @meal_plan_recipe.update!({:recipe_id => mp_rec[:recipe_id], 
+                                       :day => mp_rec[:day], 
+                                       :meal => mp_rec[:meal]}.reject{|k,v| v.blank?})
+          else
+            @meal_plan.meal_plan_recipes.create!(mp_rec)
+          end 
+          
         end
   
       end

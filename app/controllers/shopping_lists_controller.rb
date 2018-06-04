@@ -105,12 +105,12 @@ class ShoppingListsController < ApplicationController
         shopping_list_update_params[:ingredient_shopping_lists_attributes].each do |ing_sl|
           @ingredient_shopping_list = @shopping_list.ingredient_shopping_lists.find_by( ingredient_id: ing_sl[:ingredient_id], measure_id: ing_sl[:measure_id] ) 
        
-          if @ingredient_shopping_list
-            if ing_sl[:_destroy] == '1'
-              @ingredient_shopping_list.destroy()
-            else
-              @ingredient_shopping_list.update!({:amount => ing_sl[:amount], :purchased => ing_sl[:purchased]}.reject{|k,v| v.blank?})
-            end
+          if @ingredient_shopping_list && ing_sl[:_destroy] == '1'
+            @ingredient_shopping_list.destroy()
+          elsif @ingredient_shopping_list
+            @ingredient_shopping_list.update!({:amount => ing_sl[:amount], :purchased => ing_sl[:purchased]}.reject{|k,v| v.blank?})
+          else
+            @shopping_list.ingredient_shopping_lists.create!(ing_sl)
           end
 
         end

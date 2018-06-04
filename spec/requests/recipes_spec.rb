@@ -191,6 +191,7 @@ RSpec.describe 'Recipes API', type: :request do
     
     let!(:milk) { create(:ingredient, name: "milk", ingredient_category_id: dairy.id) }
     let!(:cheese) { create(:ingredient, name: "cheese", ingredient_category_id: dairy.id) }
+    let!(:yogurt) { create(:ingredient, name: "yogurt", ingredient_category_id: dairy.id) }
     
     let!(:recipe_1_ing_hash) { { milk.id => [cups.id, 1.5], cheese.id => [cups.id, 0.5] } }
     
@@ -201,7 +202,8 @@ RSpec.describe 'Recipes API', type: :request do
     let(:valid_attrs) { 
                         { 
                           recipe: { title: 'croque monsieur', 
-                                    ingredient_recipes_attributes: [ {ingredient_id: "#{milk.id}", measure_id: "#{teaspoons.id}", amount: "2.0"},
+                                    ingredient_recipes_attributes: [ {ingredient_id: "#{yogurt.id}", measure_id: "#{teaspoons.id}", amount: "2.0"},
+                                                                     {ingredient_id: "#{milk.id}", measure_id: "#{teaspoons.id}", amount: "2.0"},
                                                                      {ingredient_id: "#{cheese.id}", measure_id: "#{cups.id}", _destroy: '1' } ] 
                                   } 
                         } 
@@ -219,9 +221,10 @@ RSpec.describe 'Recipes API', type: :request do
         expect(updated_recipe.title).to match /croque monsieur/
       end
 
-      it 'updates the ingredient amount' do
-        updated_ingredient_recipe = IngredientRecipe.find_by(recipe: user_1_recipe, ingredient: milk )
-        expect(updated_ingredient_recipe.amount).to eq 2.0
+      it 'adds the new ingredient' do
+        new_ingredient_recipe = IngredientRecipe.find_by(recipe: user_1_recipe, ingredient: yogurt )
+        expect(new_ingredient_recipe).not_to eq nil 
+        expect(new_ingredient_recipe.amount).to eq 2.0
       end
 
       it 'updates the unit of measure' do
