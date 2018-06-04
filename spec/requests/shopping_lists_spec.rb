@@ -225,7 +225,7 @@ RSpec.describe 'ShoppingList API', type: :request do
     # TEST SETUP
     #
 
-    let(:unique_ingredients) { 3 }
+    let(:unique_ingredients) { 4 }
 
     # create known recipes to test aggregation for shopping list
     let!(:cups) { create(:measure, name: "cups") }
@@ -234,6 +234,7 @@ RSpec.describe 'ShoppingList API', type: :request do
     let!(:milk) { create(:ingredient, name: "milk", ingredient_category_id: dairy.id) }
     let!(:cheese) { create(:ingredient, name: "cheese", ingredient_category_id: dairy.id) }
     let!(:yogurt) { create(:ingredient, name: "yogurt", ingredient_category_id: dairy.id) }
+    let!(:soymilk) { create(:ingredient, name: "soymilk", ingredient_category_id: dairy.id) }
 
     let!(:recipe_1_ing_hash) { { milk.id => [cups.id, 1.5], cheese.id => [cups.id, 0.5], yogurt.id => [cups.id, 0.25] } }
     let!(:recipe_2_ing_hash) { { milk.id => [cups.id, 0.5], cheese.id => [cups.id, 1.5], yogurt.id => [cups.id, 1.75] } }
@@ -257,7 +258,8 @@ RSpec.describe 'ShoppingList API', type: :request do
                           shopping_list:  { 
                                             name: 'my revised shopping list',
                                             ingredient_shopping_lists_attributes: [ { ingredient_id: "#{milk.id}", measure_id: "#{cups.id}", amount: '2.0', purchased: true },
-                                                                                    { ingredient_id: "#{yogurt.id}", measure_id: "#{cups.id}", _destroy: '1' } ]
+                                                                                    { ingredient_id: "#{yogurt.id}", measure_id: "#{cups.id}", _destroy: '1' }, 
+                                                                                    { ingredient_id: "#{soymilk.id}", measure_id: "#{cups.id}", amount: '2.0', purchased: true} ]
                                           }
                         } 
                       }
@@ -287,6 +289,12 @@ RSpec.describe 'ShoppingList API', type: :request do
       it 'allows for one ingredient to be modified at a time' do
         updated_shopping_list = ShoppingList.find(user_1_shopping_list.id)
         expect(updated_shopping_list.ingredient_shopping_lists.size()).to eq (unique_ingredients - 1)
+      end
+
+      it 'creates a new shopping list entry' do
+        new_item = IngredientShoppingList.find_by(shopping_list: user_1_shopping_list, ingredient: soymilk)
+        expect(new_item).not_to eq nil
+        expect(new_item.amount).to eq 2.0
       end
 
       it 'destroys the appropriate ingredient from the list' do

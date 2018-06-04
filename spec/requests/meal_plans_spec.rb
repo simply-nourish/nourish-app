@@ -172,16 +172,17 @@ RSpec.describe 'MealPlans API', type: :request do
     # create known recipes
     let!(:user_1_recipe_1) { create_full_recipe(user_1, recipe_1_ing_hash) }
     let!(:user_1_recipe_2) { create_full_recipe(user_1, recipe_2_ing_hash) }
-    let!(:user_1_recipes) { [user_1_recipe_1, user_1_recipe_2] }
+   # let!(:user_1_recipes) { [user_1_recipe_1] }
 
     # create known meal_plans
-    let!(:user_1_meal_plan) { create_meal_plan(user_1, user_1_recipes) }
+    let!(:user_1_meal_plan) { create_meal_plan(user_1, [user_1_recipe_1]) }
     let!(:meal_plan_entry_1) { user_1_meal_plan.meal_plan_recipes.first }
-    let!(:meal_plan_entry_2) { user_1_meal_plan.meal_plan_recipes.second }
+   # let!(:meal_plan_entry_2) { user_1_meal_plan.meal_plan_recipes.second }
 
     let(:valid_attrs) { { meal_plan: { 
                                         name: 'my revised meal plan', 
-                                        meal_plan_recipes_attributes: [ {recipe_id: "#{user_1_recipe_1.id}", day: meal_plan_entry_1.day, meal: meal_plan_entry_1.meal, _destroy: "1" } ] 
+                                        meal_plan_recipes_attributes: [ {recipe_id: "#{user_1_recipe_1.id}", day: meal_plan_entry_1.day, meal: meal_plan_entry_1.meal, _destroy: "1" },
+                                                                        {recipe_id: "#{user_1_recipe_2.id}", day: "monday", meal: "lunch"} ] 
                                       } } }
 
     context 'when meal plan exists' do
@@ -199,6 +200,11 @@ RSpec.describe 'MealPlans API', type: :request do
       it 'destroys the appropriate meal plan entry' do
         destroyed_meal_plan_recipe = MealPlanRecipe.find_by(recipe: user_1_recipe_1)
         expect(destroyed_meal_plan_recipe).to eq nil
+      end
+
+      it 'adds the appropriate meal plan entry' do 
+        new_meal_plan_recipe = MealPlanRecipe.find_by(recipe: user_1_recipe_2, day: "monday", meal: "lunch");
+        expect(new_meal_plan_recipe).not_to eq nil
       end
 
     end # end context

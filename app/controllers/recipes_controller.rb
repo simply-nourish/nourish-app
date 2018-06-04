@@ -50,15 +50,16 @@ class RecipesController < ApplicationController
       if( recipe_params[:ingredient_recipes_attributes])
   
         recipe_params[:ingredient_recipes_attributes].each do |ing_rec|    
-          @ingredient_recipe = @recipe.ingredient_recipes.find_by( ingredient_id: ing_rec[:ingredient_id] ) 
-       
-          if @ingredient_recipe   
-            if ing_rec[:_destroy] == '1'
-              @ingredient_recipe.destroy()
-            else
-              @ingredient_recipe.update!( {:amount => ing_rec[:amount], :measure_id => ing_rec[:measure_id]}.reject{|k,v| v.blank?} )        
-            end 
+          @ingredient_recipe = @recipe.ingredient_recipes.find_by( ingredient_id: ing_rec[:ingredient_id] )  
+     
+          if @ingredient_recipe && ing_rec[:_destroy] == '1'
+            @ingredient_recipe.destroy()
+          elsif @ingredient_recipe
+            @ingredient_recipe.update!( {:amount => ing_rec[:amount], :measure_id => ing_rec[:measure_id]}.reject{|k,v| v.blank?} )        
+          else
+            @recipe.ingredient_recipes.create!(ing_rec)
           end
+
         end
   
       end
@@ -68,13 +69,14 @@ class RecipesController < ApplicationController
         recipe_params[:dietary_restriction_recipes_attributes].each do |diet_rec|       
           @dietary_restriction_recipe = recipe.dietary_restriction_recipes.find_by( dietary_restriction_id: diet_rec[:dietary_restriction_id] )
        
-          if @dietary_restriction_recipe 
-            if diet_rec[:_destroy] == '1'
-              @dietary_restriction_recipe.destroy()
-            else
-              @dietary_restriction_recipe.update!( {:dietary_restriction_id => diet_rec[:dietary_restriction_id]}.reject{|k,v| v.blank?} )        
-            end
+          if @dietary_restriction_recipe && diet_rec[:_destroy] == '1'
+            @dietary_restriction_recipe.destroy()
+          elsif @dietary_restriction_recipe
+            @dietary_restriction_recipe.update!( {:dietary_restriction_id => diet_rec[:dietary_restriction_id]}.reject{|k,v| v.blank?} )        
+          else
+            @recipe.dietary_restriction_recipes.create!(diet_rec);
           end    
+        
         end
    
       end
