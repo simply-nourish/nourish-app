@@ -53,9 +53,9 @@ ActiveRecord::Schema.define(version: 20180531012854) do
     t.bigint "measure_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["ingredient_id", "shopping_list_id", "measure_id"], name: "ingredient_shopping_lists_index", unique: true
     t.index ["ingredient_id"], name: "index_ingredient_shopping_lists_on_ingredient_id"
     t.index ["measure_id"], name: "index_ingredient_shopping_lists_on_measure_id"
+    t.index ["shopping_list_id", "ingredient_id", "measure_id"], name: "ingredient_shopping_lists_index", unique: true
     t.index ["shopping_list_id"], name: "index_ingredient_shopping_lists_on_shopping_list_id"
   end
 
@@ -74,8 +74,8 @@ ActiveRecord::Schema.define(version: 20180531012854) do
     t.integer "day", default: 1
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["meal_plan_id", "meal", "day"], name: "meal_plan_recipes_index", unique: true
     t.index ["meal_plan_id"], name: "index_meal_plan_recipes_on_meal_plan_id"
-    t.index ["recipe_id", "meal_plan_id", "meal", "day"], name: "meal_plan_recipes_index", unique: true
     t.index ["recipe_id"], name: "index_meal_plan_recipes_on_recipe_id"
   end
 
@@ -114,7 +114,7 @@ ActiveRecord::Schema.define(version: 20180531012854) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["meal_plan_id"], name: "index_shopping_lists_on_meal_plan_id"
-    t.index ["name", "user_id", "meal_plan_id"], name: "index_shopping_lists_on_name_and_user_id_and_meal_plan_id", unique: true
+    t.index ["name", "user_id"], name: "index_shopping_lists_on_name_and_user_id", unique: true
     t.index ["user_id"], name: "index_shopping_lists_on_user_id"
   end
 

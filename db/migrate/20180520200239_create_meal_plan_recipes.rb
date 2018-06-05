@@ -8,7 +8,7 @@ class CreateMealPlanRecipes < ActiveRecord::Migration[5.1]
       t.timestamps
     end
 
-    add_index :meal_plan_recipes, [:recipe_id, :meal_plan_id, :meal, :day], \
+    add_index :meal_plan_recipes, [:meal_plan_id, :meal, :day], \
                unique: true, :name => 'meal_plan_recipes_index'
 
   end

@@ -7,7 +7,7 @@ class MealPlanRecipe < ApplicationRecord
     enum day: [:monday, :tuesday, :wednesday, :thursday, :friday, :saturday, :sunday]
     enum meal: [:breakfast, :lunch, :dinner, :snack]
     
-    # combination of meal_plan_id, recipe_id, day, meal must be unique
-    validates_uniqueness_of :meal_plan_id, :scope => [:recipe_id, :day, :meal]
+    # combination of meal_plan_id, day, meal must be unique
+    validates_uniqueness_of :meal_plan_id, :scope => [:day, :meal]
 
 end

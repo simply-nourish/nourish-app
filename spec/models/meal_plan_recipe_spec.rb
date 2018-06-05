@@ -17,11 +17,9 @@ RSpec.describe MealPlanRecipe, type: :model do
       let!(:test_recipe) { create(:recipe, user: test_user) }
       let!(:test_meal_plan) { create(:meal_plan, user: test_user) }
   
-      subject { create(:meal_plan_recipe, recipe_id: test_recipe.id, meal_plan_id: test_meal_plan.id ) }
+      subject { create(:meal_plan_recipe, recipe_id: test_recipe.id, meal_plan_id: test_meal_plan.id, day: "monday", meal: "lunch") }
    
-      it { is_expected.to validate_uniqueness_of(:meal_plan_id).scoped_to(:recipe_id, :day, :meal) }
+      it { is_expected.to validate_uniqueness_of(:meal_plan_id).scoped_to(:day, :meal) }
     end
-
-
 
 end

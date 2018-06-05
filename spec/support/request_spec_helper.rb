@@ -78,10 +78,20 @@ module RequestSpecHelper
 
   def create_meal_plan(user, recipes) 
 
+    days = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]
+    meals = ["breakfast", "lunch", "dinner", "snack"]
+
+    i = 0
+    j = 0
+
     # create a recipe with random ingredients, restrictions
     meal_plan = create(:meal_plan, user_id: user.id)
     recipes.each do |rec|
-      create(:meal_plan_recipe, recipe_id: rec.id, meal_plan_id: meal_plan.id)
+      create(:meal_plan_recipe, recipe_id: rec.id, meal_plan_id: meal_plan.id, day: days[i], meal: meals[j])
+      i = (i + 1) % days.length
+      if i == 0 
+        j = j + 1
+      end
     end 
 
     return meal_plan

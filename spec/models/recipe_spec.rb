@@ -14,6 +14,7 @@ RSpec.describe Recipe, type: :model do
   it { is_expected.to have_many(:ingredient_recipes).dependent(:destroy) }
   it { is_expected.to have_many(:ingredients).through(:ingredient_recipes) }
   it { is_expected.to have_many(:dietary_restriction_recipes).dependent(:destroy) }
+  it { is_expected.to have_many(:dietary_restrictions).through(:dietary_restriction_recipes) }
 
   describe 'uniqueness validations' do 
     let!(:test_user) { create(:user) }
