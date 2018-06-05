@@ -18,6 +18,6 @@ class MealPlan < ApplicationRecord
   validates_associated :meal_plan_recipes
 
   # allow meal_plan model to create meal_plan_recipes
-  accepts_nested_attributes_for :meal_plan_recipes
+  accepts_nested_attributes_for :meal_plan_recipes, allow_destroy: true
 
 end

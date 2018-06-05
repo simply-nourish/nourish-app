@@ -87,7 +87,7 @@ class MealPlansController < ApplicationController
 
     # define acceptable params for post, patch
     def meal_plan_params
-      params.require(:meal_plan).permit(:name, meal_plan_recipes_attributes:[:recipe_id, :day, :meal, :_destroy] )
+      params.require(:meal_plan).permit(:name, meal_plan_recipes_attributes:[:id, :recipe_id, :day, :meal, :_destroy] )
     end
 
     def set_user
