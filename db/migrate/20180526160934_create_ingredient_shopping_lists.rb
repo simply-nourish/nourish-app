@@ -10,7 +10,7 @@ class CreateIngredientShoppingLists < ActiveRecord::Migration[5.1]
       t.timestamps
     end
 
-    add_index :ingredient_shopping_lists, [:ingredient_id, :shopping_list_id, :measure_id], \
+    add_index :ingredient_shopping_lists, [:shopping_list_id, :ingredient_id, :measure_id], \
     unique: true, :name => 'ingredient_shopping_lists_index'
   
   end

@@ -13,7 +13,7 @@ RSpec.describe 'ShoppingList API', type: :request do
   #
 
   let(:shopping_lists_per_user) { 1 }
-  let(:meal_plans_per_user) { 1 }
+  let(:meal_plans_per_user) { 2 }
 
   let(:recipes_per_meal_plan) { 2 }
   let(:ingredients_per_recipe) { 2 }

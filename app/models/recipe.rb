@@ -13,8 +13,15 @@ class Recipe < ApplicationRecord
   # allow Recipe model to create ingredient_recipes
   accepts_nested_attributes_for :ingredient_recipes, allow_destroy: true
 
+  # validates associated ingredient_recipes
+  validates_associated :ingredient_recipes
+
+  # validates associated dietary restrictions
+  validates_associated :dietary_restriction_recipes
+
   # allow Recipe model to create dietary_restrictions_recipes
   has_many :dietary_restriction_recipes, dependent: :destroy
+  has_many :dietary_restrictions, :through => :dietary_restriction_recipes
 
   # allow Recipe model to create dietary_restrictions_recipes
   accepts_nested_attributes_for :dietary_restriction_recipes, allow_destroy: true

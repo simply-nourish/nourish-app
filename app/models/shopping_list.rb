@@ -15,6 +15,9 @@ class ShoppingList < ApplicationRecord
   has_many :ingredients, :through => :ingredient_shopping_lists
   has_many :ingredient_shopping_lists, dependent: :destroy
 
+  # validates associated ingredient_shopping_lists
+  validates_associated :ingredient_shopping_lists
+
   # allow ShoppingList model to update ingredient_shopping_lists
   accepts_nested_attributes_for :ingredient_shopping_lists, allow_destroy: true
 
