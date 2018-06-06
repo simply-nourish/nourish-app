@@ -97,30 +97,15 @@ class ShoppingListsController < ApplicationController
   def update
 
     if @shopping_list.user == current_user
-    
-      @shopping_list.update({:name => shopping_list_update_params[:name]}.reject{|k,v| v.blank?} )
-      
-      # update each nested ingredient_shopping_list entry manually
-      if( shopping_list_update_params[:ingredient_shopping_lists_attributes] )
-        shopping_list_update_params[:ingredient_shopping_lists_attributes].each do |ing_sl|
-          @ingredient_shopping_list = @shopping_list.ingredient_shopping_lists.find_by( ingredient_id: ing_sl[:ingredient_id], measure_id: ing_sl[:measure_id] ) 
-       
-          if @ingredient_shopping_list && ing_sl[:_destroy] == '1'
-            @ingredient_shopping_list.destroy()
-          elsif @ingredient_shopping_list
-            @ingredient_shopping_list.update!({:amount => ing_sl[:amount], :purchased => ing_sl[:purchased]}.reject{|k,v| v.blank?})
-          else
-            @shopping_list.ingredient_shopping_lists.create!(ing_sl)
-          end
-
-        end
+      if(@shopping_list.update(shopping_list_update_params))
+        @shopping_list.save
+        head :no_content
+      else
+        render status: :unprocessable_entity
       end
-
-      head :no_content    
-  
     else
       render status: :unauthorized
-    end  
+    end
 
   end
 
@@ -144,7 +129,7 @@ class ShoppingListsController < ApplicationController
     end
 
     def shopping_list_update_params
-      params.require(:shopping_list).permit(:name, ingredient_shopping_lists_attributes: [:ingredient_id, :measure_id, :amount, :purchased, :_destroy])
+      params.require(:shopping_list).permit(:name, ingredient_shopping_lists_attributes: [:id, :ingredient_id, :measure_id, :amount, :purchased, :_destroy])
     end
 
     def set_user

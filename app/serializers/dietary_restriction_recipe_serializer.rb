@@ -2,15 +2,7 @@
 # IngredientRecipe model serializer
 
 class DietaryRestrictionRecipeSerializer < ActiveModel::Serializer
-    attributes :id, :name
-
-    def id
-      object.dietary_restriction.id
-    end
-
-    def name
-      object.dietary_restriction.name
-    end 
-
+  attributes :id, :recipe_id
+  has_one :dietary_restriction
 end
   

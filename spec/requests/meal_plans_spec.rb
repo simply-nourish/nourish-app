@@ -20,9 +20,6 @@ RSpec.describe 'MealPlans API', type: :request do
                                                   confirm_success_url: "www.google.com" } }
 
   let!(:user_2) { create(:user) }
-
-  #let!(:user_1_meal_plans) { create_meal_plan_list(user_1, meal_plans_per_user, recipes_per_meal_plan) }
-  #let!(:user_2_meal_plans) { create_meal_plan_list(user_2, meal_plans_per_user, recipes_per_meal_plan) }
   let!(:mp_recipe) { create(:recipe, user: user_1 ) }
 
   let!(:user_1_first_mp) { create_meal_plan(user_1, Array(mp_recipe)) }
@@ -173,17 +170,15 @@ RSpec.describe 'MealPlans API', type: :request do
     # create known recipes
     let!(:user_1_recipe_1) { create_full_recipe(user_1, recipe_1_ing_hash) }
     let!(:user_1_recipe_2) { create_full_recipe(user_1, recipe_2_ing_hash) }
-   # let!(:user_1_recipes) { [user_1_recipe_1] }
 
     # create known meal_plans
     let!(:user_1_meal_plan) { create_meal_plan(user_1, Array(user_1_recipe_1) )}
     let!(:meal_plan_entry_1) { MealPlan.find_by(id: user_1_meal_plan.id).meal_plan_recipes.first }
-   # let!(:meal_plan_entry_2) { user_1_meal_plan.meal_plan_recipes.second }
 
     let(:valid_attrs) { { meal_plan: { 
                                         name: 'my revised meal plan', 
-                                        meal_plan_recipes_attributes: [ {recipe_id: "#{user_1_recipe_1.id}", day: meal_plan_entry_1.day, meal: meal_plan_entry_1.meal, _destroy: "1" },
-                                                                        {recipe_id: "#{user_1_recipe_2.id}", day: "monday", meal: "lunch"} ] 
+                                        meal_plan_recipes_attributes: { "0" => {id: "#{meal_plan_entry_1.id}", _destroy: 1}, 
+                                                                        "1" => {recipe_id: "#{user_1_recipe_2.id}", day: "friday", meal: "breakfast"} }
                                       } } }
 
     context 'when meal plan exists' do
@@ -199,13 +194,14 @@ RSpec.describe 'MealPlans API', type: :request do
       end
 
       it 'destroys the appropriate meal plan entry' do
-        destroyed_meal_plan_recipe = MealPlanRecipe.find_by(recipe: user_1_recipe_1)
+        destroyed_meal_plan_recipe = MealPlanRecipe.find_by(id: meal_plan_entry_1.id)
         expect(destroyed_meal_plan_recipe).to eq nil
       end
 
       it 'adds the appropriate meal plan entry' do 
-        new_meal_plan_recipe = MealPlanRecipe.find_by(recipe: user_1_recipe_2, day: "monday", meal: "lunch");
+        new_meal_plan_recipe = user_1_meal_plan.meal_plan_recipes.find_by(recipe_id: user_1_recipe_2.id)
         expect(new_meal_plan_recipe).not_to eq nil
+        expect(new_meal_plan_recipe.recipe_id).to eq user_1_recipe_2.id
       end
 
     end # end context

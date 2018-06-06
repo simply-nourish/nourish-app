@@ -156,4 +156,20 @@ module RequestSpecHelper
 
   end
 
+  #
+  # get ingredient_shopping_lists for a given shopping list
+  #
+
+  def get_ingredient_shopping_lists(list_in)
+
+    returned_list = {}
+    @shopping_list = ShoppingList.find(list_in.id)
+    @shopping_list.ingredient_shopping_lists.each do |ing_sl|
+      returned_list[ing_sl.ingredient_id] = ing_sl.id
+    end
+
+    return returned_list
+
+  end
+
 end
