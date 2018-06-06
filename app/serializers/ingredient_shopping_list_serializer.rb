@@ -2,8 +2,8 @@
 # MealPlanRecipe model serializer
 
 class IngredientShoppingListSerializer < ActiveModel::Serializer
-    attributes :amount, :purchased
-    has_one :ingredient, :serializer => AbbrevIngredientSerializer
-    has_one :measure, :serializer => MeasureSerializer
-  end
+  attributes :id, :amount, :purchased
+  has_one :ingredient, :serializer => AbbrevIngredientSerializer
+  has_one :measure, :serializer => MeasureSerializer
+end
   

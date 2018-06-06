@@ -246,7 +246,8 @@ RSpec.describe 'ShoppingList API', type: :request do
   
     # create, assign a meal plan + shoppinglist to user one
     let!(:user_1_meal_plan) { create_meal_plan(user_1, user_1_recipes) }
-    let!(:user_1_shopping_list) { create_shopping_list( user_1, "my shopping list",  user_1_meal_plan) }
+    let!(:user_1_shopping_list) { create_shopping_list( user_1, "my shopping list",  user_1_meal_plan ) }
+    let!(:ingredient_shopping_lists) { get_ingredient_shopping_lists(user_1_shopping_list) }
    
     # create randomized shopping list for user 2
     let!(:user_2_shopping_list) { create_shopping_list( user_2, "user 2 shopping list", user_2_first_mp ) }
@@ -257,9 +258,9 @@ RSpec.describe 'ShoppingList API', type: :request do
                         { 
                           shopping_list:  { 
                                             name: 'my revised shopping list',
-                                            ingredient_shopping_lists_attributes: [ { ingredient_id: "#{milk.id}", measure_id: "#{cups.id}", amount: '2.0', purchased: true },
-                                                                                    { ingredient_id: "#{yogurt.id}", measure_id: "#{cups.id}", _destroy: '1' }, 
-                                                                                    { ingredient_id: "#{soymilk.id}", measure_id: "#{cups.id}", amount: '2.0', purchased: true} ]
+                                            ingredient_shopping_lists_attributes: { "0" => { id: "#{ingredient_shopping_lists[milk.id]}", purchased: true },
+                                                                                    "1" => { id: "#{ingredient_shopping_lists[yogurt.id]}", _destroy: '1' }, 
+                                                                                    "2" => { ingredient_id: "#{soymilk.id}", measure_id: "#{cups.id}", amount: '2.0', purchased: false} }
                                           }
                         } 
                       }

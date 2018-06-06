@@ -196,15 +196,17 @@ RSpec.describe 'Recipes API', type: :request do
     let!(:recipe_1_ing_hash) { { milk.id => [cups.id, 1.5], cheese.id => [cups.id, 0.5] } }
     
     # create known recipes
-    let!(:user_1_recipe) { create_full_recipe(user_1, recipe_1_ing_hash) }
+    let!(:user_1_recipe) { create(:recipe, user: user_1) }
+    let(:cups_milk) { create(:ingredient_recipe, recipe_id: user_1_recipe.id, ingredient_id: milk.id, measure_id: cups.id, amount: 1.5) }
+    let(:cups_cheese) { create(:ingredient_recipe, recipe_id: user_1_recipe.id, ingredient_id: cheese.id, measure_id: cups.id, amount: 0.5) }
 
     # set new attributes
     let(:valid_attrs) { 
                         { 
                           recipe: { title: 'croque monsieur', 
-                                    ingredient_recipes_attributes: [ {ingredient_id: "#{yogurt.id}", measure_id: "#{teaspoons.id}", amount: "2.0"},
-                                                                     {ingredient_id: "#{milk.id}", measure_id: "#{teaspoons.id}", amount: "2.0"},
-                                                                     {ingredient_id: "#{cheese.id}", measure_id: "#{cups.id}", _destroy: '1' } ] 
+                                    ingredient_recipes_attributes: { "0" => {ingredient_id: "#{yogurt.id}", measure_id: "#{teaspoons.id}", amount: "2.0"},
+                                                                     "1" => {id: "#{cups_milk.id}", measure_id: "#{teaspoons.id}", amount: "2.0"},
+                                                                     "2" => {id: "#{cups_cheese.id}", _destroy: '1' } }
                                   } 
                         } 
                       }

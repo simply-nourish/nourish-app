@@ -42,50 +42,15 @@ class RecipesController < ApplicationController
   def update
 
     if @recipe.user == current_user
-      @recipe.update!( {:title => recipe_params[:title], 
-                        :summary => recipe_params[:summary], 
-                        :instructions => recipe_params[:instructions]}.reject{|k,v| v.blank?} )
-      
-      # update each nested ingredient_shopping_list entry manually
-      if( recipe_params[:ingredient_recipes_attributes])
-  
-        recipe_params[:ingredient_recipes_attributes].each do |ing_rec|    
-          @ingredient_recipe = @recipe.ingredient_recipes.find_by( ingredient_id: ing_rec[:ingredient_id] )  
-     
-          if @ingredient_recipe && ing_rec[:_destroy] == '1'
-            @ingredient_recipe.destroy()
-          elsif @ingredient_recipe
-            @ingredient_recipe.update!( {:amount => ing_rec[:amount], :measure_id => ing_rec[:measure_id]}.reject{|k,v| v.blank?} )        
-          else
-            @recipe.ingredient_recipes.create!(ing_rec)
-          end
-
-        end
-  
+      if(@recipe.update(recipe_params))
+        @recipe.save
+        head :no_content
+      else
+        render status: :unprocessable_entity
       end
-
-      if( recipe_params[:dietary_restriction_recipes_attributes] )
-   
-        recipe_params[:dietary_restriction_recipes_attributes].each do |diet_rec|       
-          @dietary_restriction_recipe = recipe.dietary_restriction_recipes.find_by( dietary_restriction_id: diet_rec[:dietary_restriction_id] )
-       
-          if @dietary_restriction_recipe && diet_rec[:_destroy] == '1'
-            @dietary_restriction_recipe.destroy()
-          elsif @dietary_restriction_recipe
-            @dietary_restriction_recipe.update!( {:dietary_restriction_id => diet_rec[:dietary_restriction_id]}.reject{|k,v| v.blank?} )        
-          else
-            @recipe.dietary_restriction_recipes.create!(diet_rec);
-          end    
-        
-        end
-   
-      end
-
-      head :no_content    
-    
     else
       render status: :unauthorized
-    end  
+    end
 
   end
 
@@ -119,7 +84,7 @@ class RecipesController < ApplicationController
     # define acceptable params for post, patch
     def recipe_params
       params.require(:recipe).permit(:title, :summary, :instructions, :servings,
-                                     dietary_restriction_recipes_attributes: [:id, :dietary_restriction_id], 
+                                     dietary_restriction_recipes_attributes: [:id, :dietary_restriction_id, :_destroy], 
                                      ingredient_recipes_attributes: [:id, :ingredient_id, :measure_id, :amount, :_destroy] )
     end
 

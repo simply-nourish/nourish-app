@@ -29,4 +29,8 @@ class Recipe < ApplicationRecord
   # user can't create multiple recipes with identical titles
   validates_uniqueness_of :user_id, :scope => :title
 
+  # has many meal_plans
+  has_many :meal_plan_recipes, dependent: :destroy
+  has_many :meal_plans, through: :meal_plan_recipes
+
 end
