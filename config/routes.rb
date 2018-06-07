@@ -1,7 +1,6 @@
 Rails.application.routes.draw do
   mount_devise_token_auth_for 'User', at: 'auth'
 
-  #devise_for :users
   api_version(:module => "V1", :path => {:value => "v1"}) do
   end
   # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
@@ -19,6 +18,9 @@ Rails.application.routes.draw do
 
   # set up dietary_restrictions routes
   resources :dietary_restrictions
+
+  # set up dietary_restrictions routes
+  resources :measures
 
   # set up users + recipes, meal_plans
   # (1 user : m recipes)
